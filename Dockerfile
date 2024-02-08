@@ -4,8 +4,11 @@ RUN apk --no-cache add \
   tini \
   bash \
   samba \
-  tzdata \
-  && rm -rf /var/cache/apk/*
+  tzdata && \
+  addgroup -S smb && \
+  adduser -S -D -H -h /tmp -s /sbin/nologin -G smb -g 'Samba User' samba && \
+  rm -rf /tmp/* && \
+  rm -rf /var/cache/apk/*
   
 COPY smb.conf /etc/samba/smb.conf
 
