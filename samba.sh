@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-SHARE="/storage"
+share="/storage"
 
-mkdir -p "$SHARE"
-chmod -R 0770 "$SHARE"
-chown samba:smb "$SHARE"
+mkdir -p "$share"
+chmod -R 0770 "$share"
+chown samba:smb "$share"
+
+pass="secret"
+username="samba"
+echo -e "$pass\n$pass" | smbpasswd -a -s $username
 
 smbd --foreground --log-stdout --no-process-group
