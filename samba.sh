@@ -5,6 +5,6 @@ SHARE="/storage"
 
 mkdir -p "$SHARE"
 chmod -R 0770 "$SHARE"
-chown root:smbgrp "$SHARE"
+chown samba:smb "$SHARE"
 
 smbd --foreground --log-stdout --no-process-group
