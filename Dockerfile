@@ -14,7 +14,7 @@ COPY samba.sh /usr/bin/
 RUN chmod +x /usr/bin/samba.sh
 
 VOLUME /storage
-EXPOSE 137/udp 138/udp 139 445
+EXPOSE 139 445
 
 ENV USER "samba"
 ENV PASS "secret"
