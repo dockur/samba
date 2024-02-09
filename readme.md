@@ -35,7 +35,7 @@ services:
 Via `docker run`
 
 ```bash
-docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "PASS="samba"  dockurr/samba
+docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "PASS=secret" dockurr/samba
 ```
 
 ## Stars
