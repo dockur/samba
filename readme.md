@@ -38,6 +38,19 @@ Via `docker run`
 docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "PASS=secret" dockurr/samba
 ```
 
+## FAQ
+
+  * ### How do I modify the configuration?
+
+    You can set the `USER` and `PASS` environment variables to set the credentials for the share. And you can bind the `/storage` folder to the location you want to use for the share.
+
+    If you need more advanced features, like multiple shares or multiple users, you can modify the `smb.conf' in this repo, and bind mount it to the container like this:
+
+    ```yaml
+    volumes:
+      - /example/smb.conf:/etc/samba/smb.conf
+    ```
+
 ## Stars
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
 
