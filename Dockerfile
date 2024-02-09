@@ -6,9 +6,7 @@ RUN apk --no-cache add \
   samba \
   tzdata && \
   addgroup -S smb && \
-  adduser -S -D -H -h /tmp -s /sbin/nologin -G smb -g 'Samba User' samba && \
-  rm -rf /tmp/* && \
-  rm -rf /var/cache/apk/*
+  rm -rf /tmp/* /var/cache/apk/*
   
 COPY smb.conf /etc/samba/smb.conf
 
@@ -17,6 +15,9 @@ RUN chmod +x /usr/bin/samba.sh
 
 VOLUME /storage
 EXPOSE 137/udp 138/udp 139 445
+
+ENV USER "samba"
+ENV PASS "secret"
 
 HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L \\localhost -U % -m SMB3
 
