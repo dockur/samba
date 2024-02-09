@@ -111,7 +111,7 @@ jobs:
       -
        name: Send mail
        if: env.exists == 'false'
-       uses: dawidd6/action-send-mail@v3
+       uses: action-pack/send-mail@v1
        with:
          to: ${{secrets.MAILTO}}
          from: Github Actions <${{secrets.MAILTO}}>
