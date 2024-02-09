@@ -1,0 +1,20 @@
+on:
+  push:
+    branches-ignore:
+      - master
+    paths:
+      - '**/*.sh'
+      - 'Dockerfile'
+
+  pull_request:
+    paths:
+      - '**/*.sh'
+      - 'Dockerfile'
+
+name: "Test"
+permissions: {}
+
+jobs:
+  shellcheck:
+    name: Test
+    uses: ./.github/workflows/check.yml
