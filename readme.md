@@ -42,9 +42,11 @@ docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "P
 
   * ### How do I modify the configuration?
 
-    You can set the `USER` and `PASS` environment variables to set the credentials for the share. And you can bind the `/storage` folder to the location you want to use for the share.
+    You can set the `USER` and `PASS` environment variables to modify the credentials for the share from their defaults (user `samba` with password `secret`).
 
-    If you need more advanced features, like multiple shares or multiple users, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
+    To change the storage location, you can bind  `/storage` to the location you want to use for the share.
+
+    If you need more advanced features, like multiple shares, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
 
     ```yaml
     volumes:
