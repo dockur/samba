@@ -11,4 +11,4 @@ mkdir -p "$share"
 chmod -R 0770 "$share"
 chown "$USER:$group" "$share"
 
-smbd --foreground --debug-stdout --debuglevel=10 --no-process-group
+exec smbd --foreground --debug-stdout --debuglevel=1 --no-process-group
