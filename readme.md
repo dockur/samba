@@ -23,8 +23,8 @@ services:
     image: dockurr/samba
     container_name: samba
     environment:
-      - "USER=samba"
-      - "PASS=secret"
+      - USER: "samba"
+      - PASS: "secret"
     ports:
       - 445:445
     volumes:
