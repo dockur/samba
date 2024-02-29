@@ -27,7 +27,7 @@ jobs:
           #!/bin/bash
           package="edge/main/aarch64/samba"
           curl --show-error --fail --silent "https://pkgs.alpinelinux.org/package/$package" --output ./package_data.html
-          latest_tag=$(grep -A 3 -i version ./package_data.html | sed -E 's#.*>([0-9\.]+)-r[0-9]+</a>#\1#g' | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')
+          latest_tag=$(grep -A 3 -i \>version\< ./package_data.html | sed -E 's#.*>([0-9\.]+)-r[0-9]+</a>#\1#g' | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')
           [ -z "$latest_tag" ] && echo "Tag not found!" && exit 1
           [[ "$latest_tag" = v* ]] && latest_tag="${latest_tag:1}"
           echo "Found tag: \"${latest_tag}\"" 
