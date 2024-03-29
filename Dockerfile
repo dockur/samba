@@ -4,7 +4,8 @@ RUN apk --no-cache add \
   tini \
   bash \
   samba \
-  tzdata && \
+  tzdata \
+  shadow && \
   addgroup -S smb && \
   rm -rf /tmp/* /var/cache/apk/*
   
@@ -18,6 +19,8 @@ EXPOSE 139 445
 
 ENV USER "samba"
 ENV PASS "secret"
+ENV UID 1000
+ENV GID 1000
 
 HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L \\localhost -U % -m SMB3
 
