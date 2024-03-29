@@ -39,6 +39,12 @@ echo -e "$PASS\n$PASS" | smbpasswd -a -s "$USER" || { echo "Failed to change Sam
 sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "/etc/samba/smb.conf"
 sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "/etc/samba/smb.conf"
 
+# Verify if the RW variable is not equal to true (indicating read-only mode) and adjust settings accordingly
+if [[ "$RW" != "true" ]]; then
+    sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "/etc/samba/smb.conf"
+    sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "/etc/samba/smb.conf"
+fi
+
 # Create shared directory and set permissions
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
 chmod -R 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }

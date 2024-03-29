@@ -27,6 +27,7 @@ services:
       PASS: "secret"
       UID: 1000    # Optional, default 1000
       GID: 1000    # Optional, default 1000
+      RW: true     # Optional, default true
     ports:
       - 445:445
     volumes:
