@@ -25,6 +25,8 @@ services:
     environment:
       USER: "samba"
       PASS: "secret"
+      UID: 1000    # Optional, default 1000
+      GID: 1000    # Optional, default 1000
     ports:
       - 445:445
     volumes:
@@ -35,7 +37,7 @@ services:
 Via `docker run`
 
 ```bash
-docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "PASS=secret" dockurr/samba
+docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "PASS=secret" -e "UID=1000" -e "GID=1000"dockurr/samba
 ```
 
 ## FAQ
