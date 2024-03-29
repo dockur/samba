@@ -20,11 +20,11 @@ OldUID=$(id -u "$USER")
 OldGID=$(getent group "$group" | cut -d: -f3)
 
 # Change the UID and GID of the user and group if necessary
-if [[ $OldUID != $UID ]]; then
+if [[ "$OldUID" != "$UID" ]]; then
     usermod -u "$UID" "$USER" || { echo "Failed to change UID for $USER"; exit 1; }
 fi
 
-if [[ $OldGID != $GID ]]; then
+if [[ "$OldGID" != "$GID" ]]; then
     groupmod -g "$GID" "$group" || { echo "Failed to change GID for group $group"; exit 1; }
 fi
 
