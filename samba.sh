@@ -58,4 +58,4 @@ chown -R "$USER:$group" "$share" || { echo "Failed to set ownership for director
 #  --debug-stdout: Send debug output to stdout.
 #  --debuglevel=1: Set debug verbosity level to 1.
 #  --no-process-group: Don't create a new process group for the daemon.
-exec smbd --config-file=/etc/samba/smb.custom --foreground --debug-stdout --debuglevel=1 --no-process-group
+exec smbd --configfile=/etc/samba/smb.custom --foreground --debug-stdout --debuglevel=1 --no-process-group
