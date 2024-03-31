@@ -49,11 +49,11 @@ docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "P
 
     To change the storage location, you can bind  `/storage` to the location you want to use for the share.
 
-    If you need more advanced features, like multiple shares, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
+    If you need more advanced features, like multiple shares, you can modify the `smb.conf` file in this repo by changing the name of smb.conf, and bind mount it to the container like this:
 
     ```yaml
     volumes:
-      - /example/smb.conf:/etc/samba/smb.conf
+      - /example/smb.custom:/etc/samba/smb.custom
     ```
 
 ## Stars

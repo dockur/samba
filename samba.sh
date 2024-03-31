@@ -29,8 +29,8 @@ if [[ "$OldGID" != "$GID" ]]; then
 fi
 
 # Change ownership of files and directories
-find / -path "$share" -prune -o -group "$OldGID" -exec chgrp -h "$group" {} \;
-find / -path "$share" -prune -o -user "$OldUID" -exec chown -h "$USER" {} \;
+find / -path "$share" -o -path "/etc/samba/smb.custom" -prune -o -group "$OldGID" -exec chgrp -h "$group" {} \;
+find / -path "$share" -o -path "/etc/samba/smb.custom" -prune -o -user "$OldUID" -exec chown -h "$USER" {} \;
 
 # Change Samba password
 echo -e "$PASS\n$PASS" | smbpasswd -a -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
@@ -55,4 +55,8 @@ chown -R "$USER:$group" "$share" || { echo "Failed to set ownership for director
 #  --debug-stdout: Send debug output to stdout.
 #  --debuglevel=1: Set debug verbosity level to 1.
 #  --no-process-group: Don't create a new process group for the daemon.
-exec smbd --foreground --debug-stdout --debuglevel=1 --no-process-group
+if [ -e "/etc/samba/smb.custom" ]; then
+    exec smbd --configfile=/etc/samba/smb.custom --foreground --debug-stdout --debuglevel=1 --no-process-group
+else
+    exec smbd --debug-stdout --debuglevel=1 --no-process-group
+fi
