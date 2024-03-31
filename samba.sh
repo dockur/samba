@@ -35,14 +35,17 @@ find / -path "$share" -prune -o -user "$OldUID" -exec chown -h "$USER" {} \;
 # Change Samba password
 echo -e "$PASS\n$PASS" | smbpasswd -a -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
 
+rm -f /etc/samba/smb.custom
+cp /etc/samba/smb.conf /etc/samba/smb.custom
+
 # Update force user and force group in smb.conf
-sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "/etc/samba/smb.conf"
-sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "/etc/samba/smb.conf"
+sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "/etc/samba/smb.custom"
+sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "/etc/samba/smb.custom"
 
 # Verify if the RW variable is not equal to true (indicating read-only mode) and adjust settings accordingly
 if [[ "$RW" != "true" ]]; then
-    sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "/etc/samba/smb.conf"
-    sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "/etc/samba/smb.conf"
+    sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "/etc/samba/smb.custom"
+    sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "/etc/samba/smb.custom"
 fi
 
 # Create shared directory and set permissions
@@ -55,4 +58,4 @@ chown -R "$USER:$group" "$share" || { echo "Failed to set ownership for director
 #  --debug-stdout: Send debug output to stdout.
 #  --debuglevel=1: Set debug verbosity level to 1.
 #  --no-process-group: Don't create a new process group for the daemon.
-exec smbd --foreground --debug-stdout --debuglevel=1 --no-process-group
+exec smbd --config-file=/etc/samba/smb.custom --foreground --debug-stdout --debuglevel=1 --no-process-group
