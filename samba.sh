@@ -5,6 +5,13 @@ set -Eeuo pipefail
 group="smb"
 share="/storage"
 
+# Create shared directory
+mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
+
+# Copy config file template
+rm -f /etc/samba/smb.custom
+cp /etc/samba/smb.conf /etc/samba/smb.custom
+
 # Check if the smb group exists, if not, create it
 if ! getent group "$group" &>/dev/null; then
     groupadd "$group" || { echo "Failed to create group $group"; exit 1; }
@@ -21,37 +28,36 @@ OldGID=$(getent group "$group" | cut -d: -f3)
 
 # Change the UID and GID of the user and group if necessary
 if [[ "$OldUID" != "$UID" ]]; then
-    usermod -u "$UID" "$USER" || { echo "Failed to change UID for $USER"; exit 1; }
+    usermod -o -u "$UID" "$USER" || { echo "Failed to change UID for $USER"; exit 1; }
 fi
 
 if [[ "$OldGID" != "$GID" ]]; then
-    groupmod -g "$GID" "$group" || { echo "Failed to change GID for group $group"; exit 1; }
+    groupmod -o -g "$GID" "$group" || { echo "Failed to change GID for group $group"; exit 1; }
 fi
-
-# Change ownership of files and directories
-find / -path "$share" -prune -o -group "$OldGID" -exec chgrp -h "$group" {} \;
-find / -path "$share" -prune -o -user "$OldUID" -exec chown -h "$USER" {} \;
 
 # Change Samba password
 echo -e "$PASS\n$PASS" | smbpasswd -a -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
-
-rm -f /etc/samba/smb.custom
-cp /etc/samba/smb.conf /etc/samba/smb.custom
 
 # Update force user and force group in smb.conf
 sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "/etc/samba/smb.custom"
 sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "/etc/samba/smb.custom"
 
-# Verify if the RW variable is not equal to true (indicating read-only mode) and adjust settings accordingly
-if [[ "$RW" != "true" ]]; then
+# Verify if the RW variable is equal to false (indicating read-only mode) 
+if [[ "$RW" == [Ff0]* ]]; then
+
+    # Adjust settings in smb.conf to set share to read-only
     sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "/etc/samba/smb.custom"
     sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "/etc/samba/smb.custom"
-fi
 
-# Create shared directory and set permissions
-mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
-chmod -R 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
-chown -R "$USER:$group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
+else
+
+    # Set permissions for share directory if new (empty), leave untouched if otherwise
+    if [ -z "$(ls -A "$share")" ]; then
+      chmod 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
+      chown "$USER:$group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
+    fi
+
+fi
 
 # Start the Samba daemon with the following options:
 #  --foreground: Run in the foreground instead of daemonizing.
