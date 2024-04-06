@@ -14,7 +14,7 @@ Docker container of Samba, a re-implementation of the Windows SMB networking pro
 
 ## How to use
 
-Via `docker-compose`
+Via Docker Compose:
 
 ```yaml
 version: "3"
@@ -35,7 +35,7 @@ services:
     restart: on-failure
 ```
 
-Via `docker run`
+Via Docker CLI:
 
 ```bash
 docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "PASS=secret" dockurr/samba
