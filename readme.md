@@ -25,7 +25,9 @@ services:
     environment:
       USER: "samba"
       PASS: "secret"
-      RW: true      # Optional, default true
+      CustomConfig: false # Optional, default false
+      CONFIG: "/etc/samba/smb.conf" # Optional, default "/etc/samba/smb.conf"
+      RW: true      # Optional, default true, Not used with CustomConfig
       UID: 1000    # Optional, default 1000
       GID: 1000    # Optional, default 1000
     ports:
@@ -52,8 +54,11 @@ docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "P
     If you need more advanced features, like multiple shares, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
 
     ```yaml
+    environment:
+      CustomConfig: true #Do not process the default container config
+      CONFIG: "/etc/samba/smb.custom" #Location of the below mount
     volumes:
-      - /example/smb.conf:/etc/samba/smb.conf
+      - /example/smb.conf:/etc/samba/smb.custom
     ```
 
 ## Stars
