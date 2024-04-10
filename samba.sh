@@ -37,6 +37,10 @@ echo -e "$PASS\n$PASS" | smbpasswd -a -c "$CONFIG" -s "$USER" || { echo "Failed 
 # Use custom config if not read-only system
 if [[ "$CUSTOMCONFIG" == [Ff0]* ]]; then
 
+    # Debug: Using Default Config
+    echo "Using standard configuration file: $Config."
+    echo "Custom Config: $CUSTOMCONFIG"
+
     # Update force user and force group in smb.conf
     sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$CONFIG"
     sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "$CONFIG"
