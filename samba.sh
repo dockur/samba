@@ -38,7 +38,7 @@ echo -e "$PASS\n$PASS" | smbpasswd -a -c "$CONFIG" -s "$USER" || { echo "Failed 
 if [[ "$CUSTOMCONFIG" == [Ff0]* ]]; then
 
     # Debug: Using Default Config
-    echo "Using standard configuration file: $Config."
+    echo "Using standard configuration file: $CONFIG."
     echo "Custom Config: $CUSTOMCONFIG"
 
     # Update force user and force group in smb.conf
