@@ -32,7 +32,7 @@ if [[ "$OldGID" != "$GID" ]]; then
 fi
 
 # Change Samba password
-echo -e "$PASS\n$PASS" | smbpasswd -a -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
+echo -e "$PASS\n$PASS" | smbpasswd -a -c "$CONFIG" -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
 
 # Use custom config if not read-only system
 if [[ "$CUSTOMCONFIG" == [Ff0]* ]]; then
