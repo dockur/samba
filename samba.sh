@@ -35,7 +35,7 @@ fi
 echo -e "$PASS\n$PASS" | smbpasswd -a -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
 
 # Use custom config if not read-only system
-if [[ "$CustomConfig" == [Ff0]* ]]; then
+if [[ "$CUSTOMCONFIG" == [Ff0]* ]]; then
 
     # Update force user and force group in smb.conf
     sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$CONFIG"
