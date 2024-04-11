@@ -10,12 +10,12 @@ mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
 
 # Check if the smb group exists, if not, create it
 if ! getent group "$group" &>/dev/null; then
-    groupadd "$group" || { echo "Failed to create group $group"; exit 1; }
+    groupadd "$group" > /dev/null || { echo "Failed to create group $group"; exit 1; }
 fi
 
 # Check if the user already exists, if not, create it
 if ! id "$USER" &>/dev/null; then
-    adduser -S -D -H -h /tmp -s /sbin/nologin -G "$group" -g 'Samba User' "$USER" || { echo "Failed to create user $USER"; exit 1; }
+    adduser -S -D -H -h /tmp -s /sbin/nologin -G "$group" -g 'Samba User' "$USER" > /dev/null || { echo "Failed to create user $USER"; exit 1; }
 fi
 
 # Get the current user and group IDs
@@ -31,25 +31,33 @@ if [[ "$OldGID" != "$GID" ]]; then
     groupmod -o -g "$GID" "$group" || { echo "Failed to change GID for group $group"; exit 1; }
 fi
 
-# Use custom config if not read-only system
-if [[ "$CONFIG" == "builtin" ]]; then
+# Check if an external config file was supplied
+config="/etc/samba/smb.conf"
 
-    # Set our config to the included default
-    CONFIG=/etc/samba/smb.conf
+if [ -f "$config" ]; then
 
-    # Inform the user we are using the standard configuration file.
-    echo "Using standard configuration file: $CONFIG."
+    # Inform the user we are using a custom configuration file.
+    echo "Using provided configuration file: $config."
+
+else
+
+    config="/etc/samba/smb.tmp"
+    template="/etc/samba/smb.default"
+
+    # Generate a config file from template
+    rm -f "$config"
+    cp "$template" "$config"
 
     # Update force user and force group in smb.conf
-    sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$CONFIG"
-    sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "$CONFIG"
+    sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$config"
+    sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "$config"
 
     # Verify if the RW variable is equal to false (indicating read-only mode) 
     if [[ "$RW" == [Ff0]* ]]; then
 
         # Adjust settings in smb.conf to set share to read-only
-        sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "$CONFIG"
-        sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "$CONFIG"
+        sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "$config"
+        sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "$config"
 
     else
 
@@ -60,21 +68,14 @@ if [[ "$CONFIG" == "builtin" ]]; then
         fi
 
     fi
-else
-    # Inform the user we are using a custom configuration file.
-    echo "Using provided configuration file: $CONFIG."
-    if [[ ! -f "$CONFIG" ]]; then
-        echo "File does not exist, bailing!"
-        exit 1
-    fi
 fi
 
 # Change Samba password
-echo -e "$PASS\n$PASS" | smbpasswd -a -c "$CONFIG" -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
+echo -e "$PASS\n$PASS" | smbpasswd -a -c "$config" -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
 
 # Start the Samba daemon with the following options:
 #  --foreground: Run in the foreground instead of daemonizing.
 #  --debug-stdout: Send debug output to stdout.
 #  --debuglevel=1: Set debug verbosity level to 1.
 #  --no-process-group: Don't create a new process group for the daemon.
-exec smbd --configfile="$CONFIG" --foreground --debug-stdout --debuglevel=1 --no-process-group
+exec smbd --configfile="$config" --foreground --debug-stdout --debuglevel=1 --no-process-group
