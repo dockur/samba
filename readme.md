@@ -49,7 +49,6 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
     If you need more advanced features, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
 
     ```yaml
-    environment:
     volumes:
       - /example/smb.conf:/etc/samba/smb.conf
     ```
