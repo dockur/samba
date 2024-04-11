@@ -10,7 +10,7 @@
 
 </div></h1>
 
-Docker container of Samba, a re-implementation of the Windows SMB networking protocol.
+Docker container of Samba, an implementation of the Windows SMB networking protocol.
 
 ## How to use
 
@@ -25,9 +25,6 @@ services:
     environment:
       USER: "samba"
       PASS: "secret"
-      RW: true      # Optional, default true
-      UID: 1000    # Optional, default 1000
-      GID: 1000    # Optional, default 1000
     ports:
       - 445:445
     volumes:
@@ -38,7 +35,7 @@ services:
 Via Docker CLI:
 
 ```bash
-docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "PASS=secret" dockurr/samba
+docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/example:/storage" dockurr/samba
 ```
 
 ## FAQ
@@ -47,9 +44,9 @@ docker run -it --rm -p 445:445 -v "/home/example:/storage" -e "USER=samba" -e "P
 
     You can set the `USER` and `PASS` environment variables to modify the credentials for the share from their defaults (user `samba` with password `secret`).
 
-    To change the storage location, you can bind  `/storage` to the location you want to use for the share.
+    You can set `UID` and `GID` environment variables to change the user/group id's, and set `RW: false` to make the share read-only.
 
-    If you need more advanced features, like multiple shares, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
+    If you need more advanced features, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
 
     ```yaml
     volumes:

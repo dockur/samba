@@ -8,8 +8,9 @@ RUN apk --no-cache add \
   shadow && \
   addgroup -S smb && \
   rm -rf /tmp/* /var/cache/apk/*
-  
-COPY smb.conf /etc/samba/smb.conf
+
+RUN rm -f /etc/samba/smb.conf
+COPY smb.conf /etc/samba/smb.default
 
 COPY samba.sh /usr/bin/
 RUN chmod +x /usr/bin/samba.sh
