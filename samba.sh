@@ -10,12 +10,12 @@ mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
 
 # Check if the smb group exists, if not, create it
 if ! getent group "$group" &>/dev/null; then
-    groupadd "$group" > /dev/null || { echo "Failed to create group $group"; exit 1; }
+    groupadd "$group" || { echo "Failed to create group $group"; exit 1; }
 fi
 
 # Check if the user already exists, if not, create it
 if ! id "$USER" &>/dev/null; then
-    adduser -S -D -H -h /tmp -s /sbin/nologin -G "$group" -g 'Samba User' "$USER" > /dev/null || { echo "Failed to create user $USER"; exit 1; }
+    adduser -S -D -H -h /tmp -s /sbin/nologin -G "$group" -g 'Samba User' "$USER" || { echo "Failed to create user $USER"; exit 1; }
 fi
 
 # Get the current user and group IDs
@@ -71,7 +71,7 @@ else
 fi
 
 # Change Samba password
-echo -e "$PASS\n$PASS" | smbpasswd -a -c "$config" -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
+echo -e "$PASS\n$PASS" | smbpasswd -a -c "$config" -s "$USER" > /dev/null || { echo "Failed to change Samba password for $USER"; exit 1; }
 
 # Start the Samba daemon with the following options:
 #  --foreground: Run in the foreground instead of daemonizing.
