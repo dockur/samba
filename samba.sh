@@ -31,15 +31,14 @@ if [[ "$OldGID" != "$GID" ]]; then
     groupmod -o -g "$GID" "$group" || { echo "Failed to change GID for group $group"; exit 1; }
 fi
 
-# Change Samba password
-echo -e "$PASS\n$PASS" | smbpasswd -a -c "$CONFIG" -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
-
 # Use custom config if not read-only system
-if [[ "$CUSTOMCONFIG" == [Ff0]* ]]; then
+if [[ "$CONFIG" == "builtin" ]]; then
 
-    # Debug: Using Default Config
+    # Set our config to the included default
+    CONFIG=/etc/samba/smb.conf
+
+    # Inform the user we are using the standard configuration file.
     echo "Using standard configuration file: $CONFIG."
-    echo "Custom Config: $CUSTOMCONFIG"
 
     # Update force user and force group in smb.conf
     sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$CONFIG"
@@ -61,7 +60,13 @@ if [[ "$CUSTOMCONFIG" == [Ff0]* ]]; then
         fi
 
     fi
+else
+    # Inform the user we are using a custom configuration file.
+    echo "Using provided configuration file: $CONFIG."
 fi
+
+# Change Samba password
+echo -e "$PASS\n$PASS" | smbpasswd -a -c "$CONFIG" -s "$USER" || { echo "Failed to change Samba password for $USER"; exit 1; }
 
 # Start the Samba daemon with the following options:
 #  --foreground: Run in the foreground instead of daemonizing.

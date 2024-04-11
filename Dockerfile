@@ -22,8 +22,7 @@ ENV PASS "secret"
 ENV UID 1000
 ENV GID 1000
 ENV RW true
-ENV CUSTOMCONFIG false
-ENV CONFIG "/etc/samba/smb.conf"
+ENV CONFIG "builtin"
 
 HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L \\localhost -U % -m SMB3
 
