@@ -63,6 +63,10 @@ if [[ "$CONFIG" == "builtin" ]]; then
 else
     # Inform the user we are using a custom configuration file.
     echo "Using provided configuration file: $CONFIG."
+    if [[ ! -f "$CONFIG" ]]; then
+        echo "File does not exist, bailing!"
+        exit 1
+    fi
 fi
 
 # Change Samba password
