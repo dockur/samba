@@ -46,7 +46,7 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
     You can set `UID` and `GID` environment variables to change the user/group id's, and set `RW: false` to make the share read-only.
 
-    If you need more advanced features, you can modify the `smb.conf` file in this repo, and bind mount it to the container like this:
+    If you need more advanced features, you can modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and bind mount it to the container like this:
 
     ```yaml
     volumes:
