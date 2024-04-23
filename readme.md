@@ -44,6 +44,20 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
     You can set the `USER` and `PASS` environment variables to modify the credentials for the share from their defaults (user `samba` with password `secret`).
 
+    If you would like to avoid putting the credentials in your compose file in plain text, you can also supply the password via a secret:
+
+    ```yaml
+    services:
+      samba:
+        ..<snip>..
+        secrets:
+          - pass
+
+    secrets:
+      pass:
+        file: ./samba_pass.txt
+    ```
+
     You can set `UID` and `GID` environment variables to change the user/group id's, and set `RW: false` to make the share read-only.
 
     If you need more advanced features, you can modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and bind mount it to the container like this:

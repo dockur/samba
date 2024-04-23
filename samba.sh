@@ -4,6 +4,7 @@ set -Eeuo pipefail
 # Set variables for group and share directory
 group="smb"
 share="/storage"
+secret="/run/secrets/pass"
 
 # Create shared directory
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
@@ -68,6 +69,11 @@ else
         fi
 
     fi
+fi
+
+# Check if the secret file exists and if its size is greater than zero
+if [ -s "$secret" ]; then
+  PASS=$(cat "$secret")
 fi
 
 # Change Samba password
