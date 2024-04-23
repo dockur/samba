@@ -70,6 +70,11 @@ else
     fi
 fi
 
+# Check if the secret file exists and if its size is greater than zero
+if [ -s "$PASS_SECRETFILE" ]; then
+  PASS=$(cat "$PASS_SECRETFILE")
+fi
+
 # Change Samba password
 echo -e "$PASS\n$PASS" | smbpasswd -a -c "$config" -s "$USER" > /dev/null || { echo "Failed to change Samba password for $USER"; exit 1; }
 

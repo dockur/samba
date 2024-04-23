@@ -20,6 +20,7 @@ EXPOSE 139 445
 
 ENV USER "samba"
 ENV PASS "secret"
+ENV PASS_SECRETFILE=/run/secrets/pass
 ENV UID 1000
 ENV GID 1000
 ENV RW true

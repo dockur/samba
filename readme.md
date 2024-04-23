@@ -29,7 +29,13 @@ services:
       - 445:445
     volumes:
       - /home/example:/storage
+    secrets:
+      - pass
     restart: on-failure
+
+secrets:
+  pass:
+    file: ./samba_pass.txt
 ```
 
 Via Docker CLI:
@@ -45,6 +51,8 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
     You can set the `USER` and `PASS` environment variables to modify the credentials for the share from their defaults (user `samba` with password `secret`).
 
     You can set `UID` and `GID` environment variables to change the user/group id's, and set `RW: false` to make the share read-only.
+
+    You can set a different path for the pass file, by changing the variable `PASS_SECRETFILE`. Have in mind that passsing the secret it will override the `PASS` value.
 
     If you need more advanced features, you can modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and bind mount it to the container like this:
 
