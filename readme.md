@@ -40,11 +40,11 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
 ## FAQ
 
-  * ### How do I modify the configuration?
+  * ### How do I modify the credentials?
 
-    You can set the `USER` and `PASS` environment variables to modify the credentials for the share from their defaults (user `samba` with password `secret`).
+    You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
 
-    If you would like to avoid putting the credentials in your compose file in plain text, you can also supply the password via a secret:
+    Alternatively, you can also supply the password through a Docker secret. The below example will read the password from a file called `samba_pass.txt` in your home directory:
 
     ```yaml
     services:
@@ -58,9 +58,15 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
         file: ./samba_pass.txt
     ```
 
-    You can set `UID` and `GID` environment variables to change the user/group id's, and set `RW: false` to make the share read-only.
+  * ### How do I modify the permissions?
 
-    If you need more advanced features, you can modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and bind mount it to the container like this:
+    You can set `UID` and `GID` environment variables to change the user and group ID.
+
+    To mark the share as read-only, add the variable `RW: false`.
+
+  * ### How do I modify other settings?
+
+    If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and binding your custom config to the container like this:
 
     ```yaml
     volumes:
