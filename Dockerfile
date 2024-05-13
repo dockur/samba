@@ -11,8 +11,8 @@ RUN set -eu && \
     rm -f /etc/samba/smb.conf && \
     rm -rf /tmp/* /var/cache/apk/*
 
-COPY --chmod=755 samba.sh /usr/bin/
-COPY --chmod=644 smb.conf /etc/samba/smb.default
+COPY --chmod=755 samba.sh /usr/bin/samba.sh
+COPY --chmod=664 smb.conf /etc/samba/smb.default
 
 VOLUME /storage
 EXPOSE 139 445
