@@ -17,7 +17,6 @@ Docker container of Samba, an implementation of the Windows SMB networking proto
 Via Docker Compose:
 
 ```yaml
-version: "3"
 services:
   samba:
     image: dockurr/samba
