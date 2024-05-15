@@ -28,7 +28,6 @@ services:
       - 445:445
     volumes:
       - /home/example:/storage
-    restart: on-failure
 ```
 
 Via Docker CLI:
