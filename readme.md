@@ -42,20 +42,6 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
     You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
 
-    Alternatively, you can also supply the password through a Docker secret. The below example will read the password from a file called `samba_pass.txt` in your home directory:
-
-    ```yaml
-    services:
-      samba:
-        ..<snip>..
-        secrets:
-          - pass
-
-    secrets:
-      pass:
-        file: ./samba_pass.txt
-    ```
-
   * ### How do I modify the permissions?
 
     You can set `UID` and `GID` environment variables to change the user and group ID.
