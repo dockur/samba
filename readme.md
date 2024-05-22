@@ -33,7 +33,7 @@ services:
 Via Docker CLI:
 
 ```bash
-docker run -it --name samba -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/example:/storage" dockurr/samba
+docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/example:/storage" dockurr/samba
 ```
 
 ## FAQ
