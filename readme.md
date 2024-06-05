@@ -10,7 +10,7 @@
 
 </div></h1>
 
-Docker container of Samba, an implementation of the Windows SMB networking protocol.
+Docker container of [Samba](https://www.samba.org/), an implementation of the Windows SMB networking protocol.
 
 ## How to use
 
