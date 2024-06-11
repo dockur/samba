@@ -12,7 +12,7 @@
 
 Docker container of [Samba](https://www.samba.org/), an implementation of the Windows SMB networking protocol.
 
-## How to use
+## Usage  🐳
 
 Via Docker Compose:
 
@@ -36,7 +36,7 @@ Via Docker CLI:
 docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/example:/storage" dockurr/samba
 ```
 
-## FAQ
+## Configuration ⚙️
 
   * ### How do I modify the credentials?
 
@@ -57,7 +57,7 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
       - /example/smb.conf:/etc/samba/smb.conf
     ```
 
-## Stars
+## Stars 🌟
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
 
 [build_url]: https://github.com/dockur/samba/
