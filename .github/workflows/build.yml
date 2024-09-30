@@ -27,11 +27,12 @@ jobs:
           #!/bin/bash
           package="edge/main/aarch64/samba"
           resp=$(curl -sS "https://pkgs.alpinelinux.org/package/$package")
-          latest_tag=$(echo "$resp" | grep -A 3 -i \>version\< | sed -E 's#.*>([0-9\.]+)-r[0-9]+</a>#\1#g' | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')
+          latest_tag=$(echo "$resp" | grep -A 3 -i \>version\< | sed -e 's/<[^>]*>//g' | sed -E 's#.*>([0-9\.]+)-r[0-9]+</a>#\1#g' | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')
           [ -z "$latest_tag" ] && echo "Tag not found!" && exit 1
           [[ "$latest_tag" = v* ]] && latest_tag="${latest_tag:1}"
           echo "Found tag: \"${latest_tag}\"" 
           echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+          echo "latest_version=${latest_tag%-*}" >> $GITHUB_ENV
       - 
         name: Check if the tag exists locally
         uses: action-pack/tag-exists@v1
@@ -62,7 +63,7 @@ jobs:
             ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,priority=100
-            type=raw,value=${{ env.latest_tag }}
+            type=raw,value=${{ env.latest_version }}
           labels: |
             org.opencontainers.image.title=${{ vars.NAME }}
         env:
@@ -99,14 +100,14 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
-            VERSION_ARG=${{ steps.meta.outputs.version }}
+            VERSION_ARG=${{ env.latest_version }}
       -
         name: Create a release
         if: env.exists == 'false'
         uses: action-pack/github-release@v2
         with:
-          tag: "v${{ steps.meta.outputs.version }}"
-          title: "v${{ steps.meta.outputs.version }}"
+          tag: "v${{ env.latest_tag }}"
+          title: "v${{ env.latest_version }}"
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
       -
         name: Send mail
@@ -116,8 +117,8 @@ jobs:
           to: ${{secrets.MAILTO}}
           from: Github Actions <${{secrets.MAILTO}}>
           connection_url: ${{secrets.MAIL_CONNECTION}}
-          subject: Build of ${{ github.event.repository.name }} v${{ steps.meta.outputs.version }} completed
+          subject: Build of ${{ github.event.repository.name }} v${{ env.latest_tag }} completed
           body: |
-              The build job of ${{ github.event.repository.name }} v${{ steps.meta.outputs.version }} was completed successfully! 
+              The build job of ${{ github.event.repository.name }} v${{ env.latest_tag }} was completed successfully! 
               
               See https://github.com/${{ github.repository }}/actions for more information.
