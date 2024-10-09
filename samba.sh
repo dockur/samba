@@ -17,14 +17,14 @@ add_user() {
     # Check if the smb group exists, if not, create it
     if ! getent group "$groupname" &>/dev/null; then
         [[ "$groupname" != "smb" ]] && echo "Group $groupname does not exist, creating group..."
-        groupadd -o -g "$gid" "$groupname" || { echo "Failed to create group $groupname"; return 1; }
+        groupadd -o -g "$gid" "$groupname" > /dev/null || { echo "Failed to create group $groupname"; return 1; }
     else
         # Check if the gid right,if not, change it
         local current_gid
         current_gid=$(getent group "$groupname" | cut -d: -f3)
         if [[ "$current_gid" != "$gid" ]]; then
             [[ "$groupname" != "smb" ]] && echo "Group $groupname exists but GID differs, updating GID..."
-            groupmod -o -g "$gid" "$groupname" || { echo "Failed to update GID for group $groupname"; return 1; }
+            groupmod -o -g "$gid" "$groupname" > /dev/null || { echo "Failed to update GID for group $groupname"; return 1; }
         fi
     fi
 
@@ -38,11 +38,11 @@ add_user() {
         current_uid=$(id -u "$username")
         if [[ "$current_uid" != "$uid" ]]; then
             echo "User $username exists but UID differs, updating UID..."
-            usermod -o -u "$uid" "$username" || { echo "Failed to update UID for user $username"; return 1; }
+            usermod -o -u "$uid" "$username" > /dev/null || { echo "Failed to update UID for user $username"; return 1; }
         fi
 
         # Update user's group
-        usermod -g "$groupname" "$username" || { echo "Failed to update group for user $username"; return 1; }
+        usermod -g "$groupname" "$username" > /dev/null || { echo "Failed to update group for user $username"; return 1; }
     fi
 
     # Check if the user is a samba user
