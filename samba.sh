@@ -48,11 +48,11 @@ add_user() {
     # Check if the user is a samba user
     if pdbedit -s "$cfg" -L | grep -q "^$username:"; then
         # if the user is a samba user, change its password
-        echo -e "$password\n$password" | smbpasswd -s "$username" || { echo "Failed to update Samba password for $username"; return 1; }
+        echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" || { echo "Failed to update Samba password for $username"; return 1; }
         [[ "$username" != "samba" ]] && echo "Password for existing Samba user $username has been updated."
     else
         # if the user is not a samba user, create it and set a password
-        echo -e "$password\n$password" | smbpasswd -a -s "$username" || { echo "Failed to add Samba user $username"; return 1; }
+        echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" || { echo "Failed to add Samba user $username"; return 1; }
         [[ "$username" != "samba" ]] && echo "User $username has been added to Samba and password set."
     fi
 }
