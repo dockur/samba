@@ -24,6 +24,6 @@ ENV UID=1000
 ENV GID=1000
 ENV RW=true
 
-HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L \\localhost -U % -m SMB3
+HEALTHCHECK --interval=60s --timeout=15s CMD smbclient --configfile=/etc/samba.conf -L \\localhost -U % -m SMB3
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]
