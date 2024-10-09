@@ -58,13 +58,13 @@ volumes:
   - /example/smb.conf:/etc/samba/smb.conf
 ```
 
-### How do I create multiple users?
+### How do I configure multiple users?
 
-If you want to use multiple users, you can bind the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file to the container as follows:
+If you want to use multiple users, you can bind the [users.conf](https://github.com/dockur/samba/blob/master/users.conf) file to the container as follows:
 
 ```yaml
 volumes:
-  - /example/smb_user.conf:/etc/samba/smb_user.conf
+  - /example/users.conf:/etc/samba/users.conf
 ```
 
 ## Stars 🌟
