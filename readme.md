@@ -39,17 +39,17 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
 ## Configuration ⚙️
 
-  * ### How do I modify the credentials?
+  * ### How to modify the credentials?
 
     You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
 
-  * ### How do I modify the permissions?
+  * ### How to modify the permissions?
 
     You can set `UID` and `GID` environment variables to change the user and group ID.
 
     To mark the share as read-only, add the variable `RW: false`.
 
-  * ### How do I modify other settings?
+  * ### How to modify other settings?
 
     If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and binding your custom config to the container like this:
 
@@ -58,7 +58,7 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
       - /example/smb.conf:/etc/samba/smb.conf
     ```
 
-  * ### How do I use multiple Samba users?
+  * ### How to use multiple Samba users?
 
     If you want to use multiple Samba users, you can enable multi-user mode by setting MULTI_USER to true in the environment and modifying the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file in this repository. You can also modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) to implement different Samba policies for different users. To do this, completely override the default configuration and bind your custom config to the container as follows:
 
