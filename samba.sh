@@ -141,8 +141,8 @@ else
 
 fi
 
-# Store configuration location
-echo "$config" > /etc/samba/smb.loc
+# Store configuration location for Healthcheck
+ln -sf "$config" /etc/samba.conf
 
 # Start the Samba daemon with the following options:
 #  --configfile: Location of the configuration file.
