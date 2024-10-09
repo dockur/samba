@@ -39,42 +39,45 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
 ## Configuration ⚙️
 
-  * ### How to modify the credentials?
+### How do I modify the credentials?
 
-    You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
+You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
 
-  * ### How to modify the permissions?
+### How do I modify the permissions?
 
-    You can set `UID` and `GID` environment variables to change the user and group ID.
+You can set `UID` and `GID` environment variables to change the user and group ID.
 
-    To mark the share as read-only, add the variable `RW: false`.
+To mark the share as read-only, add the variable `RW: false`.
 
-  * ### How to modify other settings?
+### How do I modify other settings?
 
-    If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and binding your custom config to the container like this:
+If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and binding your custom config to the container like this:
 
-    ```yaml
-    volumes:
-      - /example/smb.conf:/etc/samba/smb.conf
-    ```
+```yaml
+volumes:
+  - /example/smb.conf:/etc/samba/smb.conf
+```
 
-  * ### How to use multiple Samba users?
+### How do I use multiple users?
 
-    If you want to use multiple Samba users, you can enable multi-user mode by setting MULTI_USER to true in the environment and modifying the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file in this repository. You can also modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) to implement different Samba policies for different users. To do this, completely override the default configuration and bind your custom config to the container as follows:
+If you want to use multiple Samba users, you can enable multi-user mode by binding the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file to the container as follows:
 
-    ```yaml
-    environment:
-      MULTI_USER: true
-    volumes:
-      - /example/smb.conf:/etc/samba/smb.conf
-      - /example/smb_user.conf:/etc/samba/smb_user.conf
-    ```
+```yaml
+volumes:
+  - /example/smb.conf:/etc/samba/smb.conf
+  - /example/smb_user.conf:/etc/samba/smb_user.conf
+```
 
-    Note: In this mode, you will need to manage the ownership and permissions of the shared folders yourself. In the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file, user configurations must follow a specific format. Each line should contain the user information in the following order: 
-    ```yaml
-    username:uid:groupname:gid:password
-    ```
-     Each line represents the configuration for a single user, and the parameters must be separated by colons":".
+You can also modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) to implement different Samba policies for different users. 
+
+> [!NOTE]
+> In this mode, you will need to manage the ownership and permissions of the shared folders yourself.
+> 
+> In the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file, user configurations must follow a specific format. Each line should contain the user information in the following order:
+>```yaml
+>username:uid:groupname:gid:password
+>```
+>Each line represents the configuration for a single user, and the parameters must be separated by colons.
 
 ## Stars 🌟
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
