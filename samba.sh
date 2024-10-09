@@ -74,7 +74,7 @@ if [ -s "$secret" ]; then
     PASS=$(cat "$secret")
 fi
 
-if [ -f "$config" ]; then
+if [ -f "$config" ] && [ -s "$config" ]; then
 
     # Inform the user we are using a custom configuration file.
     echo "Using provided configuration file: $config."
@@ -102,7 +102,7 @@ else
 fi
 
 # Check if multi-user mode is enabled
-if [[ -f "$user_config" ]]; then
+if [ -f "$user_config" ] && [ -s "$user_config" ]; then
 
     while read -r line; do
 
@@ -141,7 +141,11 @@ else
 
 fi
 
+# Store configuration location
+echo "$config" > /etc/samba/smb.loc
+
 # Start the Samba daemon with the following options:
+#  --configfile: Location of the configuration file.
 #  --foreground: Run in the foreground instead of daemonizing.
 #  --debug-stdout: Send debug output to stdout.
 #  --debuglevel=1: Set debug verbosity level to 1.
