@@ -24,6 +24,8 @@ ENV UID=1000
 ENV GID=1000
 ENV RW=true
 
+ENV MULTI_USER=false
+
 HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L \\localhost -U % -m SMB3
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]

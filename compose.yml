@@ -8,6 +8,7 @@ services:
       RW: true      # Optional, default true
       UID: 1000    # Optional, default 1000
       GID: 1000    # Optional, default 1000
+      MULTI_USER: false
     ports:
       - 445:445
     volumes:
