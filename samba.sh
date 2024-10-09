@@ -7,11 +7,12 @@ set -Eeuo pipefail
 # and updates the password in the Samba database. The function ensures that the group also exists, 
 # creating it if necessary, and modifies the group ID if it differs from the provided value.
 add_user() {
-    local username="$1"
-    local uid="$2"
-    local groupname="$3"
-    local gid="$4"
-    local password="$5"
+    local cfg="$1"
+    local username="$2"
+    local uid="$3"
+    local groupname="$4"
+    local gid="$5"
+    local password="$6"
 
     # Check if the smb group exists, if not, create it
     if ! getent group "$groupname" &>/dev/null; then
@@ -45,7 +46,7 @@ add_user() {
     fi
 
     # Check if the user is a samba user
-    if pdbedit -L | grep -q "^$username:"; then
+    if pdbedit -s "$cfg" -L | grep -q "^$username:"; then
         # if the user is a samba user, change its password
         echo -e "$password\n$password" | smbpasswd -s "$username" || { echo "Failed to update Samba password for $username"; return 1; }
         [[ "$username" != "samba" ]] && echo "Password for existing Samba user $username has been updated."
@@ -87,7 +88,7 @@ if [[ -f "$user_config" ]] && [[ -f "$config" ]]; then
         fi
 
         # Call the function with extracted values
-        add_user "$username" "$uid" "$groupname" "$gid" "$password"
+        add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password"
 
     done < "$user_config"
 
@@ -106,12 +107,13 @@ else
         PASS=$(cat "$secret")
     fi
 
-    add_user "$USER" "$UID" "$group" "$GID" "$PASS"
-
     if [ -f "$config" ]; then
+
         # Inform the user we are using a custom configuration file.
         echo "Using provided configuration file: $config."
+
     else
+
         config="/etc/samba/smb.tmp"
         template="/etc/samba/smb.default"
 
@@ -128,12 +130,17 @@ else
             # Adjust settings in smb.conf to set share to read-only
             sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "$config"
             sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "$config"
-        else
-            # Set permissions for share directory if new (empty), leave untouched if otherwise
-            if [ -z "$(ls -A "$share")" ]; then
-                chmod 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
-                chown "$USER:$group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
-            fi
+        fi
+
+    fi
+
+    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS"
+
+    if [[ "$RW" != [Ff0]* ]]; then
+        # Set permissions for share directory if new (empty), leave untouched if otherwise
+        if [ -z "$(ls -A "$share")" ]; then
+            chmod 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
+            chown "$USER:$group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
         fi
     fi
 
