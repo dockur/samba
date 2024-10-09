@@ -30,7 +30,7 @@ add_user() {
 
     # Check if the user already exists, if not, create it
     if ! id "$username" &>/dev/null; then
-        [[ "$username" != "samba" ]] && echo "User $username does not exist, creating user..."
+        [[ "$username" != "$USER" ]] && echo "User $username does not exist, creating user..."
         adduser -S -D -H -h /tmp -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
@@ -48,26 +48,61 @@ add_user() {
     # Check if the user is a samba user
     if pdbedit -s "$cfg" -L | grep -q "^$username:"; then
         # if the user is a samba user, change its password
-        echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" || { echo "Failed to update Samba password for $username"; return 1; }
-        [[ "$username" != "samba" ]] && echo "Password for existing Samba user $username has been updated."
+        echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" > /dev/null || { echo "Failed to update Samba password for $username"; return 1; }
+        [[ "$username" != "$USER" ]] && echo "Password for existing Samba user $username has been updated."
     else
         # if the user is not a samba user, create it and set a password
-        echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" || { echo "Failed to add Samba user $username"; return 1; }
-        [[ "$username" != "samba" ]] && echo "User $username has been added to Samba and password set."
+        echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
+        [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba and password set."
     fi
 }
 
-# External config file
+# Set variables for config file
 config="/etc/samba/smb.conf"
 user_config="/etc/samba/smb_user.conf"
 
-# Check if the user configuration file exists
-if [[ -f "$user_config" ]] && [[ ! -f "$config" ]]; then
-  echo "File $config not found, disabling multi-user mode."
+# Set variables for group and share directory
+group="smb"
+share="/storage"
+secret="/run/secrets/pass"
+
+# Create shared directory
+mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
+
+# Check if the secret file exists and if its size is greater than zero
+if [ -s "$secret" ]; then
+    PASS=$(cat "$secret")
+fi
+
+if [ -f "$config" ]; then
+
+    # Inform the user we are using a custom configuration file.
+    echo "Using provided configuration file: $config."
+
+else
+
+    config="/etc/samba/smb.tmp"
+    template="/etc/samba/smb.default"
+
+    # Generate a config file from template
+    rm -f "$config"
+    cp "$template" "$config"
+
+    # Update force user and force group in smb.conf
+    sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$config"
+    sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "$config"
+
+    # Verify if the RW variable is equal to false (indicating read-only mode) 
+    if [[ "$RW" == [Ff0]* ]]; then
+        # Adjust settings in smb.conf to set share to read-only
+        sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "$config"
+        sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "$config"
+    fi
+
 fi
 
 # Check if multi-user mode is enabled
-if [[ -f "$user_config" ]] && [[ -f "$config" ]]; then
+if [[ -f "$user_config" ]]; then
 
     while read -r line; do
 
@@ -93,46 +128,6 @@ if [[ -f "$user_config" ]] && [[ -f "$config" ]]; then
     done < "$user_config"
 
 else
-
-    # Set variables for group and share directory
-    group="smb"
-    share="/storage"
-    secret="/run/secrets/pass"
-
-    # Create shared directory
-    mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
-
-    # Check if the secret file exists and if its size is greater than zero
-    if [ -s "$secret" ]; then
-        PASS=$(cat "$secret")
-    fi
-
-    if [ -f "$config" ]; then
-
-        # Inform the user we are using a custom configuration file.
-        echo "Using provided configuration file: $config."
-
-    else
-
-        config="/etc/samba/smb.tmp"
-        template="/etc/samba/smb.default"
-
-        # Generate a config file from template
-        rm -f "$config"
-        cp "$template" "$config"
-
-        # Update force user and force group in smb.conf
-        sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$config"
-        sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "$config"
-
-        # Verify if the RW variable is equal to false (indicating read-only mode) 
-        if [[ "$RW" == [Ff0]* ]]; then
-            # Adjust settings in smb.conf to set share to read-only
-            sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "$config"
-            sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "$config"
-        fi
-
-    fi
 
     add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS"
 
