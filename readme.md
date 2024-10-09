@@ -70,7 +70,11 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
       - /example/smb_user.conf:/etc/samba/smb_user.conf
     ```
 
-    Note: In the smb_user.conf file, user configurations must follow a specific format. Each line should contain the user information in the following order: username:uid:groupname:gid:password. Each line represents the configuration for a single user, and the parameters must be separated by colons":".
+    Note: In the smb_user.conf file, user configurations must follow a specific format. Each line should contain the user information in the following order: 
+    ```yaml
+    username:uid:groupname:gid:password
+    ```
+     Each line represents the configuration for a single user, and the parameters must be separated by colons":".
 
 ## Stars 🌟
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
