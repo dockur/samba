@@ -63,8 +63,8 @@ add_user() {
 group="smb"
 share="/storage"
 secret="/run/secrets/pass"
+users="/etc/samba/users.conf"
 config="/etc/samba/smb.conf"
-user_config="/etc/samba/smb_user.conf"
 
 # Create shared directory
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
@@ -102,7 +102,7 @@ else
 fi
 
 # Check if multi-user mode is enabled
-if [ -f "$user_config" ] && [ -s "$user_config" ]; then
+if [ -f "$users" ] && [ -s "$users" ]; then
 
     while read -r line; do
 
@@ -125,7 +125,7 @@ if [ -f "$user_config" ] && [ -s "$user_config" ]; then
         # Call the function with extracted values
         add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password"
 
-    done < "$user_config"
+    done < "$users"
 
 else
 
