@@ -47,24 +47,24 @@ add_user() {
 
     # Check if the user is a samba user
     if pdbedit -s "$cfg" -L | grep -q "^$username:"; then
-        # if the user is a samba user, change its password
+        # If the user is a samba user, change its password
         echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" > /dev/null || { echo "Failed to update Samba password for $username"; return 1; }
         [[ "$username" != "$USER" ]] && echo "Password for existing Samba user $username has been updated."
     else
-        # if the user is not a samba user, create it and set a password
+        # If the user is not a samba user, create it and set a password
         echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
         [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba and password set."
     fi
-}
 
-# Set variables for config file
-config="/etc/samba/smb.conf"
-user_config="/etc/samba/smb_user.conf"
+    return 0
+}
 
 # Set variables for group and share directory
 group="smb"
 share="/storage"
 secret="/run/secrets/pass"
+config="/etc/samba/smb.conf"
+user_config="/etc/samba/smb_user.conf"
 
 # Create shared directory
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
