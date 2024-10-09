@@ -69,11 +69,11 @@ if [[ "$MULTI_USER" == true ]]; then
             [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
 
             # Split each line by colon and assign to variables
-            username=$(echo "$line" | cut -d: -f1)
-            uid=$(echo "$line" | cut -d: -f2)
-            groupname=$(echo "$line" | cut -d: -f3)
-            gid=$(echo "$line" | cut -d: -f4)
-            password=$(echo "$line" | cut -d: -f5)
+            username=$(echo "$line" | cut -d':' -f1)
+            uid=$(echo "$line" | cut -d':' -f2)
+            groupname=$(echo "$line" | cut -d':' -f3)
+            gid=$(echo "$line" | cut -d':' -f4)
+            password=$(echo "$line" | cut -d':' -f5)
 
             # Check if all required fields are present
             if [[ -z "$username" || -z "$uid" || -z "$groupname" || -z "$gid" || -z "$password" ]]; then
