@@ -15,21 +15,21 @@ add_user() {
 
     # Check if the smb group exists, if not, create it
     if ! getent group "$groupname" &>/dev/null; then
-        echo "Group $groupname does not exist, creating group..."
+        [[ "$groupname" != "smb" ]] && echo "Group $groupname does not exist, creating group..."
         groupadd -o -g "$gid" "$groupname" || { echo "Failed to create group $groupname"; return 1; }
     else
         # Check if the gid right,if not, change it
         local current_gid
         current_gid=$(getent group "$groupname" | cut -d: -f3)
         if [[ "$current_gid" != "$gid" ]]; then
-            echo "Group $groupname exists but GID differs, updating GID..."
+            [[ "$groupname" != "smb" ]] && echo "Group $groupname exists but GID differs, updating GID..."
             groupmod -o -g "$gid" "$groupname" || { echo "Failed to update GID for group $groupname"; return 1; }
         fi
     fi
 
     # Check if the user already exists, if not, create it
     if ! id "$username" &>/dev/null; then
-        echo "User $username does not exist, creating user..."
+        [[ "$username" != "samba" ]] && echo "User $username does not exist, creating user..."
         adduser -S -D -H -h /tmp -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
@@ -48,11 +48,11 @@ add_user() {
     if pdbedit -L | grep -q "^$username:"; then
         # if the user is a samba user, change its password
         echo -e "$password\n$password" | smbpasswd -s "$username" || { echo "Failed to update Samba password for $username"; return 1; }
-        echo "Password for existing Samba user $username has been updated."
+        [[ "$username" != "samba" ]] && echo "Password for existing Samba user $username has been updated."
     else
         # if the user is not a samba user, create it and set a password
         echo -e "$password\n$password" | smbpasswd -a -s "$username" || { echo "Failed to add Samba user $username"; return 1; }
-        echo "User $username has been added to Samba and password set."
+        [[ "$username" != "samba" ]] && echo "User $username has been added to Samba and password set."
     fi
 }
 
