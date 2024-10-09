@@ -6,7 +6,7 @@ set -Eeuo pipefail
 # If the user already exists, it updates the user's UID and group association as necessary, 
 # and updates the password in the Samba database. The function ensures that the group also exists, 
 # creating it if necessary, and modifies the group ID if it differs from the provided value.
-add_or_update_samba_user() {
+add_user() {
     local username="$1"
     local uid="$2"
     local groupname="$3"
@@ -60,38 +60,39 @@ add_or_update_samba_user() {
 config="/etc/samba/smb.conf"
 user_config="/etc/samba/smb_user.conf"
 
-# Check if multi-user mode is enabled
-if [[ "$MULTI_USER" == true ]]; then
-    # Check if the user configuration file exists, note: config and user_config must be exist!!!
-    if [[ -f "$user_config" && -f "$config" ]]; then
-        while read -r line; do
-            # Skip lines that are comments or empty
-            [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
-
-            # Split each line by colon and assign to variables
-            username=$(echo "$line" | cut -d':' -f1)
-            uid=$(echo "$line" | cut -d':' -f2)
-            groupname=$(echo "$line" | cut -d':' -f3)
-            gid=$(echo "$line" | cut -d':' -f4)
-            password=$(echo "$line" | cut -d':' -f5)
-
-            # Check if all required fields are present
-            if [[ -z "$username" || -z "$uid" || -z "$groupname" || -z "$gid" || -z "$password" ]]; then
-                echo "Skipping incomplete line: $line"
-                continue
-            fi
-
-            # Call the function with extracted values
-            add_or_update_samba_user "$username" "$uid" "$groupname" "$gid" "$password"
-        done < "$user_config"
-    else
-        echo "/etc/samba/smb_user.conf not found, setting MULTI_USER to false."
-        MULTI_USER=false
-    fi
+# Check if the user configuration file exists
+if [[ -f "$user_config" ]] && [[ ! -f "$config" ]]; then
+  echo "File $config not found, disabling multi-user mode."
 fi
 
-# Handle single user case
-if [[ "$MULTI_USER" == false ]]; then
+# Check if multi-user mode is enabled
+if [[ -f "$user_config" ]] && [[ -f "$config" ]]; then
+
+    while read -r line; do
+
+        # Skip lines that are comments or empty
+        [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
+
+        # Split each line by colon and assign to variables
+        username=$(echo "$line" | cut -d':' -f1)
+        uid=$(echo "$line" | cut -d':' -f2)
+        groupname=$(echo "$line" | cut -d':' -f3)
+        gid=$(echo "$line" | cut -d':' -f4)
+        password=$(echo "$line" | cut -d':' -f5)
+
+        # Check if all required fields are present
+        if [[ -z "$username" || -z "$uid" || -z "$groupname" || -z "$gid" || -z "$password" ]]; then
+            echo "Skipping incomplete line: $line"
+            continue
+        fi
+
+        # Call the function with extracted values
+        add_user "$username" "$uid" "$groupname" "$gid" "$password"
+
+    done < "$user_config"
+
+else
+
     # Set variables for group and share directory
     group="smb"
     share="/storage"
@@ -105,7 +106,7 @@ if [[ "$MULTI_USER" == false ]]; then
         PASS=$(cat "$secret")
     fi
 
-    add_or_update_samba_user "$USER" "$UID" "$group" "$GID" "$PASS"
+    add_user "$USER" "$UID" "$group" "$GID" "$PASS"
 
     if [ -f "$config" ]; then
         # Inform the user we are using a custom configuration file.
@@ -135,6 +136,7 @@ if [[ "$MULTI_USER" == false ]]; then
             fi
         fi
     fi
+
 fi
 
 # Start the Samba daemon with the following options:
