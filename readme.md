@@ -58,6 +58,20 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
       - /example/smb.conf:/etc/samba/smb.conf
     ```
 
+  * ### How do I use multiple Samba users?
+
+    If you want to use multiple Samba users, you can enable multi-user mode by setting MULTI_USER to true in the environment and modifying the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file in this repository. You can also modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) to implement different Samba policies for different users. To do this, completely override the default configuration and bind your custom config to the container as follows:
+
+    ```yaml
+    environment:
+      MULTI_USER: true
+    volumes:
+      - /example/smb.conf:/etc/samba/smb.conf
+      - /example/smb_user.conf:/etc/samba/smb_user.conf
+    ```
+
+    Note: In the smb_user.conf file, user configurations must follow a specific format. Each line should contain the user information in the following order: username:uid:groupname:gid:password. Each line represents the configuration for a single user, and the parameters must be separated by colons":".
+
 ## Stars 🌟
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
 
