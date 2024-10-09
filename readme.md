@@ -60,24 +60,12 @@ volumes:
 
 ### How do I use multiple users?
 
-If you want to use multiple Samba users, you can enable multi-user mode by binding the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file to the container as follows:
+If you want to use multiple users, you can bind the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file to the container as follows:
 
 ```yaml
 volumes:
-  - /example/smb.conf:/etc/samba/smb.conf
   - /example/smb_user.conf:/etc/samba/smb_user.conf
 ```
-
-You can also modify the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) to implement different Samba policies for different users. 
-
-> [!NOTE]
-> In this mode, you will need to manage the ownership and permissions of the shared folders yourself.
-> 
-> In the [smb_user.conf](https://github.com/dockur/samba/blob/master/smb_user.conf) file, user configurations must follow a specific format. Each line should contain the user information in the following order:
->```yaml
->username:uid:groupname:gid:password
->```
->Each line represents the configuration for a single user, and the parameters must be separated by colons.
 
 ## Stars 🌟
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
