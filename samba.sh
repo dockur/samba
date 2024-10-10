@@ -123,13 +123,13 @@ if [ -f "$users" ] && [ -s "$users" ]; then
         fi
 
         # Call the function with extracted values
-        add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password"
+        add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password" || { echo "Failed to add user $username"; exit 1; }
 
     done < "$users"
 
 else
 
-    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS"
+    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" || { echo "Failed to add user $username"; exit 1; }
 
     if [[ "$RW" != [Ff0]* ]]; then
         # Set permissions for share directory if new (empty), leave untouched if otherwise
