@@ -54,11 +54,23 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
 You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
 
+```yaml
+environment:
+  USER: "samba"
+  PASS: "secret"
+```
+
 ### How do I modify the permissions?
 
 You can set `UID` and `GID` environment variables to change the user and group ID.
 
-To mark the share as read-only, add the variable `RW: false`.
+```yaml
+environment:
+  UID: "1002"
+  GID: "1005"
+```
+
+To mark the share as read-only, add the variable `RW: "false"`.
 
 ### How do I modify other settings?
 
