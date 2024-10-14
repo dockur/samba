@@ -39,6 +39,17 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
 ## Configuration ⚙️
 
+### How do I choose the shared folder?
+
+  To change the location of the shared folder, include the following bind mount in your compose file:
+
+  ```yaml
+  volumes:
+    - /home/example:/storage
+  ```
+
+  Replace the example path `/home/example` with the desired folder.
+
 ### How do I modify the credentials?
 
 You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
