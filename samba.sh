@@ -129,7 +129,7 @@ if [ -f "$users" ] && [ -s "$users" ]; then
 
 else
 
-    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" || { echo "Failed to add user $username"; exit 1; }
+    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" || { echo "Failed to add user $USER"; exit 1; }
 
     if [[ "$RW" != [Ff0]* ]]; then
         # Set permissions for share directory if new (empty), leave untouched if otherwise
