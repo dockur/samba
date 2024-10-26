@@ -50,6 +50,10 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
   Replace the example path `/home/example` with the desired folder.
 
+> [!NOTE]  
+>  The name of the share will be `Data`, so to connect to it enter: `\\192.168.0.2\Data` in Windows Explorer (replace the example IP address with that of your host).
+>  
+
 ### How do I modify the credentials?
 
 You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
