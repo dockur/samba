@@ -3,6 +3,7 @@ services:
     image: dockurr/samba
     container_name: samba
     environment:
+      NAME: "Data"    
       USER: "samba"
       PASS: "secret"
       RW: true      # Optional, default true
