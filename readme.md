@@ -23,6 +23,7 @@ services:
     image: dockurr/samba
     container_name: samba
     environment:
+      NAME: "Data"
       USER: "samba"
       PASS: "secret"
     ports:
@@ -39,22 +40,34 @@ docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/exampl
 
 ## Configuration ⚙️
 
-### How do I choose the shared folder?
+### How do I choose the location of the shared folder?
 
-  To change the location of the shared folder, include the following bind mount in your compose file:
+To change the location of the shared folder, include the following bind mount in your compose file:
 
-  ```yaml
-  volumes:
-    - /home/example:/storage
-  ```
+```yaml
+volumes:
+  - /home/example:/storage
+```
 
-  Replace the example path `/home/example` with the desired folder.
+Replace the example path `/home/example` with the desired folder.
 
-> [!NOTE]  
->  The name of the share will be `Data`, so to connect to it enter: `\\192.168.0.2\Data` in Windows Explorer (replace the example IP address with that of your host).
->  
+### How do I modify the display name of the shared folder?
 
-### How do I modify the credentials?
+You can change the display name of the shared folder by adding the following environment variable:
+
+```yaml
+environment:
+  NAME: "Data"
+```  
+
+### How do I connect tot the shared folder?
+
+To connect to the shared folder enter: `\\192.168.0.2\Data` in Windows Explorer.
+
+> [!NOTE]
+> Replace the example IP address above with that of your host.
+
+### How do I modify the default credentials?
 
 You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
 
