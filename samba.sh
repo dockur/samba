@@ -90,7 +90,7 @@ else
 
     # Set custom display name if provided
     if [ -n "$NAME" ] && [[ "${NAME,,}" != "data" ]]; then
-      sed "s/[Data]/[$NAME]/" "$config"    
+      sed "s/\[Data\]/\[$NAME\]/" "$config"    
     fi
 
     # Update force user and force group in smb.conf
