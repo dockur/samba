@@ -17,6 +17,7 @@ COPY --chmod=664 smb.conf /etc/samba/smb.default
 VOLUME /storage
 EXPOSE 139 445
 
+ENV NAME="Data"
 ENV USER="samba"
 ENV PASS="secret"
 
