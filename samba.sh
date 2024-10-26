@@ -62,8 +62,8 @@ add_user() {
 group="smb"
 share="/storage"
 secret="/run/secrets/pass"
-users="/etc/samba/users.conf"
 config="/etc/samba/smb.conf"
+users="/etc/samba/users.conf"
 
 # Create shared directory
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
@@ -87,6 +87,11 @@ else
     # Generate a config file from template
     rm -f "$config"
     cp "$template" "$config"
+
+    # Set custom display name if provided
+    if [ -n "$NAME" ] && [[ "${NAME,,}" != "data" ]]; then
+      sed "s/[Data]/[$NAME]/" "$config"    
+    fi
 
     # Update force user and force group in smb.conf
     sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$config"
