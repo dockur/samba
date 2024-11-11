@@ -60,7 +60,7 @@ environment:
   NAME: "Data"
 ```  
 
-### How do I connect tot the shared folder?
+### How do I connect to the shared folder?
 
 To connect to the shared folder enter: `\\192.168.0.2\Data` in Windows Explorer.
 
