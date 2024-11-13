@@ -24,7 +24,7 @@ This fork is configured to focus more on implementing a multi-user share using S
 Build with buildkit!
 
 Run:
-`DOCKER_BUILDKIT=1 docker build . -t [registry:tag]`
+`DOCKER_BUILDKIT=1 docker build . -t [registry:tag]` inside of this repository's directory.
 
 Or have the following configuration in your `daemon.json`
 ```json
