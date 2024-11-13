@@ -13,17 +13,10 @@ RUN set -eu && \
 
 COPY --chmod=755 samba.sh /usr/bin/samba.sh
 COPY --chmod=664 smb.conf /etc/samba/smb.default
+COPY --chmod=600 users.conf /etc/samba/users.conf
 
 VOLUME /storage
 EXPOSE 139 445
-
-ENV NAME="Data"
-ENV USER="samba"
-ENV PASS="secret"
-
-ENV UID=1000
-ENV GID=1000
-ENV RW=true
 
 HEALTHCHECK --interval=60s --timeout=15s CMD smbclient --configfile=/etc/samba.conf -L \\localhost -U % -m SMB3
 
