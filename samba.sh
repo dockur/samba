@@ -109,17 +109,13 @@ fi
 # Check if multi-user mode is enabled
 if [ -f "$users" ] && [ -s "$users" ]; then
 
-    while read -r line; do
+    while IFS= read -r line || [[ -n ${line} ]]; do
 
         # Skip lines that are comments or empty
         [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
 
         # Split each line by colon and assign to variables
-        username=$(echo "$line" | cut -d':' -f1)
-        uid=$(echo "$line" | cut -d':' -f2)
-        groupname=$(echo "$line" | cut -d':' -f3)
-        gid=$(echo "$line" | cut -d':' -f4)
-        password=$(echo "$line" | cut -d':' -f5)
+        IFS=':' read -r username uid groupname gid password <<< "$line"
 
         # Check if all required fields are present
         if [[ -z "$username" || -z "$uid" || -z "$groupname" || -z "$gid" || -z "$password" ]]; then
