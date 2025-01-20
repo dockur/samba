@@ -126,7 +126,7 @@ if [ -f "$users" ] && [ -s "$users" ]; then
         # Call the function with extracted values
         add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password" || { echo "Failed to add user $username"; exit 1; }
 
-    done < "$users"
+    done < <(tr -d '\r' < "$users")
 
 else
 
