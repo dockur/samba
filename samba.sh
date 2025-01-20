@@ -46,7 +46,8 @@ add_user() {
     fi
 
     # Check if the user is a samba user
-    if pdbedit -s "$cfg" -L | grep -q "^$username:"; then
+    pdb_output=$(pdbedit -s "$cfg" -L)  #Do not combine the two commands into one, as this could lead to issues with the execution order and proper passing of variables. 
+    if echo "$pdb_output" | grep -q "^$username:"; then
         # If the user is a samba user, update its password in case it changed
         echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" > /dev/null || { echo "Failed to update Samba password for $username"; return 1; }
     else
