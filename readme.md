@@ -115,9 +115,9 @@ Lines starting with `#` are ignore and treated as a comment. Each line contains 
 
 where:
 - `username` The textual name of the user.
-- `UID` The numerical name of the user.
+- `UID` The numerical id of the user.
 - `groupname` The textual name of the primary user group.
-- `GID` The numerical name of the primary user group.
+- `GID` The numerical id of the primary user group.
 - `password` The clear text password of the user. The password can not contain `:`,`\n` or `\r`.
 - `home` Optional field for setting the home directory of the user. If omitted the value of the `$HOME_DIR` (defaults to `/tmp`) variable is used.
 
