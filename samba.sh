@@ -13,6 +13,7 @@ add_user() {
     local groupname="$4"
     local gid="$5"
     local password="$6"
+    local homedir="$7"
 
     # Check if the smb group exists, if not, create it
     if ! getent group "$groupname" &>/dev/null; then
@@ -31,7 +32,12 @@ add_user() {
     # Check if the user already exists, if not, create it
     if ! id "$username" &>/dev/null; then
         [[ "$username" != "$USER" ]] && echo "User $username does not exist, creating user..."
-        adduser -S -D -H -h /tmp -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
+        extra_args=""
+        # Check if home directory already exists, if so do not create home during user creation
+        if [ -d "$homedir" ]; then
+          extra_args="$extra_args -H"
+        fi
+        adduser $extra_args -S -D -h "$homedir" -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
         local current_uid
@@ -116,7 +122,7 @@ if [ -f "$users" ] && [ -s "$users" ]; then
         [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
 
         # Split each line by colon and assign to variables
-        IFS=':' read -r username uid groupname gid password <<< "$line"
+        IFS=':' read -r username uid groupname gid password homedir <<< "$line"
 
         # Check if all required fields are present
         if [[ -z "$username" || -z "$uid" || -z "$groupname" || -z "$gid" || -z "$password" ]]; then
@@ -124,14 +130,19 @@ if [ -f "$users" ] && [ -s "$users" ]; then
             continue
         fi
 
+        # Fall back to $HOME_DIR if not explicitly set for user
+        if [[ -z "$homedir" ]]; then
+            homedir="$HOME_DIR"
+        fi
+
         # Call the function with extracted values
-        add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password" || { echo "Failed to add user $username"; exit 1; }
+        add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password" "$homedir" || { echo "Failed to add user $username"; exit 1; }
 
     done < <(tr -d '\r' < "$users")
 
 else
 
-    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" || { echo "Failed to add user $USER"; exit 1; }
+    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" "$HOME_DIR" || { echo "Failed to add user $USER"; exit 1; }
 
     if [[ "$RW" != [Ff0]* ]]; then
         # Set permissions for share directory if new (empty), leave untouched if otherwise
