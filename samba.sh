@@ -32,12 +32,12 @@ add_user() {
     # Check if the user already exists, if not, create it
     if ! id "$username" &>/dev/null; then
         [[ "$username" != "$USER" ]] && echo "User $username does not exist, creating user..."
-        extra_args=""
+        extra_args=()
         # Check if home directory already exists, if so do not create home during user creation
         if [ -d "$homedir" ]; then
-          extra_args="$extra_args -H"
+          extra_args=("${extra_args[@]}" -H)
         fi
-        adduser $extra_args -S -D -h "$homedir" -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
+        adduser "${extra_args[@]}" -S -D -h "$homedir" -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
         local current_uid
