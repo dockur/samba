@@ -130,10 +130,8 @@ if [ -f "$users" ] && [ -s "$users" ]; then
             continue
         fi
 
-        # Fall back to $HOME_DIR if not explicitly set for user
-        if [[ -z "$homedir" ]]; then
-            homedir="$HOME_DIR"
-        fi
+        # Default homedir if not explicitly set for user
+        [[ -z "$homedir" ]] && homedir="$share"
 
         # Call the function with extracted values
         add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password" "$homedir" || { echo "Failed to add user $username"; exit 1; }
@@ -142,7 +140,7 @@ if [ -f "$users" ] && [ -s "$users" ]; then
 
 else
 
-    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" "$HOME_DIR" || { echo "Failed to add user $USER"; exit 1; }
+    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" "$share" || { echo "Failed to add user $USER"; exit 1; }
 
     if [[ "$RW" != [Ff0]* ]]; then
         # Set permissions for share directory if new (empty), leave untouched if otherwise
