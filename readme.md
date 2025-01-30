@@ -107,11 +107,9 @@ volumes:
   - /example/users.conf:/etc/samba/users.conf
 ```
 
-The format of the `users.conf` file is as follows: 
-Lines starting with `#` are ignore and treated as a comment. Each line contains a `:` separated list of attributes describing the user to be created.
+Each line inside that file contains a `:` separated list of attributes describing the user to be created.
 
 `username:UID:groupname:GID:password:homedir`  
-`username:UID:groupname:GID:password`
 
 where:
 - `username` The textual name of the user.
@@ -119,7 +117,7 @@ where:
 - `groupname` The textual name of the primary user group.
 - `GID` The numerical id of the primary user group.
 - `password` The clear text password of the user. The password can not contain `:`,`\n` or `\r`.
-- `homedir` Optional field for setting the home directory of the user. If omitted the value of the `$HOME_DIR` (defaults to `/tmp`) variable is used.
+- `homedir` Optional field for setting the home directory of the user. 
 
 ## Stars 🌟
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
