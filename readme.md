@@ -30,6 +30,7 @@ services:
       - 445:445
     volumes:
       - /home/example:/storage
+    restart: always
 ```
 
 Via Docker CLI:
