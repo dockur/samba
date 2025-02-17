@@ -91,6 +91,11 @@ else
     config="/etc/samba/smb.tmp"
     template="/etc/samba/smb.default"
 
+    if [ ! -f "$template" ]; then
+      echo "Your /etc/samba directory does not contain a valid smb.conf file!"
+      exit 1
+    fi
+
     # Generate a config file from template
     rm -f "$config"
     cp "$template" "$config"
