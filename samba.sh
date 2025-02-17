@@ -126,6 +126,14 @@ else
 
 fi
 
+# Check if users file is not a directory
+if [ -d "$users" ]; then
+
+    echo "The file $users does not exist, please check that you mapped it to a valid path!"
+    exit 1
+
+fi
+
 # Check if multi-user mode is enabled
 if [ -f "$users" ] && [ -s "$users" ]; then
 
