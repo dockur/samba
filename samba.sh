@@ -83,7 +83,7 @@ fi
 # Check if config file is not a directory
 if [ -d "$config" ]; then
 
-    echo "The file /etc/samba/smb.conf does not exist, please check that you mapped it to a valid path!"
+    echo "The file $config does not exist, please check that you mapped it to a valid path!"
     exit 1
 
 fi
