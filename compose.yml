@@ -3,7 +3,7 @@ services:
     image: dockurr/samba
     container_name: samba
     environment:
-      NAME: "Data"    
+      NAME: "Data"
       USER: "samba"
       PASS: "secret"
       RW: true      # Optional, default true
@@ -13,3 +13,4 @@ services:
       - 445:445
     volumes:
       - /home/example:/storage
+    restart: always
