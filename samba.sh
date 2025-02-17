@@ -80,6 +80,14 @@ if [ -s "$secret" ]; then
     PASS=$(cat "$secret")
 fi
 
+# Check if config file is not a directory
+if [ -d "$config" ]; then
+
+    echo "The file /etc/samba/smb.conf does not exist, please check that you mapped it to a valid path!"
+    exit 1
+
+fi
+
 # Check if an external config file was supplied
 if [ -f "$config" ] && [ -s "$config" ]; then
 
