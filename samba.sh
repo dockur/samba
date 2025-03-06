@@ -176,6 +176,10 @@ fi
 # Store configuration location for Healthcheck
 ln -sf "$config" /etc/samba.conf
 
+# Set directory permissions
+[ -d /run/samba/msg.lock ] && chmod -R 0755 /run/samba/msg.lock
+[ -d /var/log/samba/cores ] && chmod -R 0700 /var/log/samba/cores
+
 # Start the Samba daemon with the following options:
 #  --configfile: Location of the configuration file.
 #  --foreground: Run in the foreground instead of daemonizing.
