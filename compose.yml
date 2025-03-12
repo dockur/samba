@@ -12,5 +12,5 @@ services:
     ports:
       - 445:445
     volumes:
-      - /home/example:/storage
+      - ./samba:/storage
     restart: always
