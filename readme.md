@@ -29,14 +29,14 @@ services:
     ports:
       - 445:445
     volumes:
-      - /home/example:/storage
+      - ./samba:/storage
     restart: always
 ```
 
 Via Docker CLI:
 
 ```bash
-docker run -it --rm -p 445:445 -e "USER=samba" -e "PASS=secret" -v "/home/example:/storage" dockurr/samba
+docker run -it --rm --name samba -p 445:445 -e "USER=samba" -e "PASS=secret" -v ${PWD:-.}/samba:/storage dockurr/samba
 ```
 
 ## Configuration ⚙️
@@ -47,10 +47,10 @@ To change the location of the shared folder, include the following bind mount in
 
 ```yaml
 volumes:
-  - /home/example:/storage
+  - ./samba:/storage
 ```
 
-Replace the example path `/home/example` with the desired folder.
+Replace the example path `./samba` with the desired folder or named volume.
 
 ### How do I modify the display name of the shared folder?
 
@@ -96,7 +96,7 @@ If you need more advanced features, you can completely override the default conf
 
 ```yaml
 volumes:
-  - /example/smb.conf:/etc/samba/smb.conf
+  - ./smb.conf:/etc/samba/smb.conf
 ```
 
 ### How do I configure multiple users?
@@ -105,7 +105,7 @@ If you want to configure multiple users, you can bind the [users.conf](https://g
 
 ```yaml
 volumes:
-  - /example/users.conf:/etc/samba/users.conf
+  - ./users.conf:/etc/samba/users.conf
 ```
 
 Each line inside that file contains a `:` separated list of attributes describing the user to be created.
