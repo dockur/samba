@@ -69,7 +69,7 @@ jobs:
           tags: |
             type=raw,value=latest,priority=100
             type=raw,value=${{ env.latest_minor }}
-            type=raw,value=${{ env.latest_version }}
+            type=raw,value=${{ env.latest_version }},priority=250
           labels: |
             org.opencontainers.image.title=${{ vars.NAME }}
         env:
