@@ -137,6 +137,11 @@ if [ -d "$users" ]; then
 
 fi
 
+# Create directories if missing
+mkdir -p /var/lib/samba/sysvol
+mkdir -p /var/lib/samba/private
+mkdir -p /var/lib/samba/bind-dns
+
 # Check if multi-user mode is enabled
 if [ -f "$users" ] && [ -s "$users" ]; then
 
