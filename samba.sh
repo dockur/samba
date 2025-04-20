@@ -71,7 +71,6 @@ share="/storage"
 secret="/run/secrets/pass"
 config="/etc/samba/smb.conf"
 users="/etc/samba/users.conf"
-data_dir="/data"
 
 # Create shared directory
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
@@ -127,24 +126,6 @@ else
 
 fi
 
-mkdir -p $data_dir/lib $data_dir/cache
-
-# if /var/lib/samba is not a link, copy it's content to /data/lib (if empty)
-# create a softlink /var/lib/samba pointing to /data/lib
-if ! [ -L "/var/lib/samba" ]; then
-  if [ -z "$(ls -A $data_dir/lib)" ]; then
-    cp -r /var/lib/samba/* $data_dir/lib/
-  fi
-  rm -rf /var/lib/samba
-  ln -sf $data_dir/lib /var/lib/samba
-fi
-
-# create cache softlink pointing to /data/cache
-if [ ! -L "/var/cache/samba" ]; then
-  rm -rf /var/cache/samba
-  ln -sf $data_dir/cache /var/cache/samba
-fi
-
 # Check if users file is not a directory
 if [ -d "$users" ]; then
 
@@ -194,6 +175,11 @@ fi
 
 # Store configuration location for Healthcheck
 ln -sf "$config" /etc/samba.conf
+
+# Create directories if missing
+mkdir -p /var/lib/samba/sysvol
+mkdir -p /var/lib/samba/private
+mkdir -p /var/lib/samba/bind-dns
 
 # Set directory permissions
 [ -d /run/samba/msg.lock ] && chmod -R 0755 /run/samba/msg.lock
