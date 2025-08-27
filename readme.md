@@ -36,7 +36,7 @@ services:
 ##### Via Docker CLI:
 
 ```bash
-docker run -it --rm --name samba -p 445:445 -e "USER=samba" -e "PASS=secret" -v "${PWD:-.}/samba:/storage" dockurr/samba
+docker run -it --rm --name samba -p 445:445 -e "NAME=Data" -e "USER=samba" -e "PASS=secret" -v "${PWD:-.}/samba:/storage" dockurr/samba
 ```
 
 ## Configuration ⚙️
@@ -59,7 +59,7 @@ You can change the display name of the shared folder by adding the following env
 ```yaml
 environment:
   NAME: "Data"
-```  
+```
 
 ### How do I connect to the shared folder?
 
@@ -110,7 +110,7 @@ volumes:
 
 Each line inside that file contains a `:` separated list of attributes describing the user to be created.
 
-`username:UID:groupname:GID:password:homedir`  
+`username:UID:groupname:GID:password:homedir`
 
 where:
 - `username` The textual name of the user.
@@ -118,7 +118,7 @@ where:
 - `groupname` The textual name of the primary user group.
 - `GID` The numerical id of the primary user group.
 - `password` The clear text password of the user. The password can not contain `:`,`\n` or `\r`.
-- `homedir` Optional field for setting the home directory of the user. 
+- `homedir` Optional field for setting the home directory of the user.
 
 ## Stars 🌟
 [![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
