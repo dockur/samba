@@ -195,4 +195,4 @@ ln -sf "$config" /etc/samba.conf
 #  --debug-stdout: Send debug output to stdout.
 #  --debuglevel=1: Set debug verbosity level to 1.
 #  --no-process-group: Don't create a new process group for the daemon.
-exec smbd --configfile="$config" --foreground --debug-stdout --debuglevel=1 --no-process-group
+exec smbd --configfile="$config" --foreground --debug-stdout -d "${DEBUG_LEVEL:-1}" --no-process-group
