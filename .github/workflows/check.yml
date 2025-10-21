@@ -11,7 +11,7 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         env:
-         SHELLCHECK_OPTS: -x
+          SHELLCHECK_OPTS: -x
       - name: Lint Dockerfile
         uses: hadolint/hadolint-action@v3.3.0
         with:
