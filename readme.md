@@ -36,7 +36,7 @@ services:
 ##### Via Docker CLI:
 
 ```bash
-docker run -it --rm --name samba -p 445:445 -e "NAME=Data" -e "USER=samba" -e "PASS=secret" -v "${PWD:-.}/samba:/storage" dockurr/samba
+docker run -it --rm --name samba -p 445:445 -e "NAME=Data" -e "USER=samba" -e "PASS=secret" -v "${PWD:-.}/samba:/storage" docker.io/dockurr/samba
 ```
 
 ## Configuration ⚙️
