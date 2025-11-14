@@ -24,7 +24,6 @@ jobs:
       -
         name: Get remote package data
         run: |
-          #!/bin/bash
           set -e -o pipefail
           latest_tag=$(curl -sSf https://dl-cdn.alpinelinux.org/edge/main/aarch64/APKINDEX.tar.gz |
             tar -xzO APKINDEX |
@@ -48,7 +47,6 @@ jobs:
       -
         name: Finish when found
         run: |
-          #!/bin/bash
           val="${{ steps.checkTag.outputs.exists }}"
           echo "exists=${val}" >> $GITHUB_ENV
       -
