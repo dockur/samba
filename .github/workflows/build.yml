@@ -68,7 +68,7 @@ jobs:
             ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,priority=100
-            type=raw,value=${{ env.latest_major }},priority=350
+            type=raw,value=${{ env.latest_major }},priority=450
             type=raw,value=${{ env.latest_minor }},priority=350
             type=raw,value=${{ env.latest_version }},priority=250
           labels: |
