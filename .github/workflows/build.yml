@@ -25,11 +25,12 @@ jobs:
         name: Get remote package data
         run: |
           #!/bin/bash
-          package="edge/main/aarch64/samba"
-          resp=$(curl -sS "https://pkgs.alpinelinux.org/package/$package")
-          latest_tag=$(echo "$resp" | grep -A 3 -i \>version\< | sed -e 's/<[^>]*>//g' | sed -E 's#.*>([0-9\.]+)-r[0-9]+</a>#\1#g' | tail -1 | sed 's/^[ \t]*//;s/[ \t]*$//')
-          [ -z "$latest_tag" ] && echo "Tag not found!" && exit 1
-          [[ "$latest_tag" = v* ]] && latest_tag="${latest_tag:1}"
+          set -e -o pipefail
+          latest_tag=$(curl -sSf https://dl-cdn.alpinelinux.org/edge/main/aarch64/APKINDEX.tar.gz |
+            tar -xzO APKINDEX |
+            tr '\n' '\36' |
+            sed -E 's/\o36{2,}/\n/g' |
+            sed -nE '/(^|\o36)P:samba($|\o36)/ s/(^|.+\o36)V:([^\o36]+)($|\o36.+)/\2/ p')
           echo "Found tag: \"${latest_tag}\"" 
           latest_version="${latest_tag%-*}"
           major="${latest_version%%.*}"
