@@ -38,6 +38,7 @@ jobs:
           echo "latest_tag=$latest_tag" >> $GITHUB_ENV
           echo "latest_version=$latest_version" >> $GITHUB_ENV
           echo "latest_minor=$major.$minor" >> $GITHUB_ENV
+          echo "latest_major=$major" >> $GITHUB_ENV
       - 
         name: Check if the tag exists locally
         uses: action-pack/tag-exists@v1
@@ -67,6 +68,7 @@ jobs:
             ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,priority=100
+            type=raw,value=${{ env.latest_major }}
             type=raw,value=${{ env.latest_minor }}
             type=raw,value=${{ env.latest_version }},priority=250
           labels: |
