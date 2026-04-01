@@ -3,13 +3,15 @@
 FROM alpine:edge
 
 RUN set -eu && \
+    apk update && \
+    apk upgrade && \
     apk --no-cache add \
     tini \
     bash \
     samba \
-    samba-common-server-libs \
     tzdata \
-    shadow && \
+    shadow \
+    libauth-samba && \
     addgroup -S smb && \
     rm -f /etc/samba/smb.conf && \
     rm -rf /tmp/* /var/cache/apk/*
