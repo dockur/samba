@@ -7,6 +7,7 @@ RUN set -eu && \
     tini \
     bash \
     samba \
+    samba-common-server-libs \
     tzdata \
     shadow && \
     addgroup -S smb && \
