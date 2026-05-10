@@ -78,7 +78,7 @@ jobs:
       - 
         name: Set up Docker Buildx
         if: env.exists == 'false'
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       -
         name: Login into Docker Hub
         if: env.exists == 'false'
