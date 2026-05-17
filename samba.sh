@@ -32,7 +32,7 @@ add_user() {
     # Check if the user already exists, if not, create it
     if ! id "$username" &>/dev/null; then
         [[ "$username" != "$USER" ]] && echo "User $username does not exist, creating user..."
-        extra_args=()
+        local extra_args=()
         # Check if home directory already exists, if so do not create home during user creation
         if [ -d "$homedir" ]; then
           extra_args=("${extra_args[@]}" -H)
@@ -52,6 +52,7 @@ add_user() {
     fi
 
     # Check if the user is a samba user
+    local pdb_output
     pdb_output=$(pdbedit -s "$cfg" -L)  #Do not combine the two commands into one, as this could lead to issues with the execution order and proper passing of variables. 
     if echo "$pdb_output" | grep -q "^$username:"; then
         # skip samba password update if password is * or !
