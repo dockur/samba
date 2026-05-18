@@ -176,13 +176,18 @@ else
 
 fi
 
-# Check if no external config file was supplied
-if [[ "$config" == "/etc/samba/smb.tmp" ]]; then
+: "${FORCE:="Y"}"
 
-    # Update force user and force group in smb.conf
-    sed -i "s/^\(\s*\)force user =.*/\1force user = $first_user/" "$config"
-    sed -i "s/^\(\s*\)force group =.*/\1force group = $first_group/" "$config"
+if [[ "$FORCE" == [Yy1]* ]]; then
 
+  # Check if no external config file was supplied
+  if [[ "$config" == "/etc/samba/smb.tmp" ]]; then
+
+      # Update force user and force group in smb.conf
+      sed -i "s/^\(\s*\)force user =.*/\1force user = $first_user/" "$config"
+      sed -i "s/^\(\s*\)force group =.*/\1force group = $first_group/" "$config"
+
+  fi
 fi
 
 # Store configuration location for Healthcheck
