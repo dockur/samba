@@ -195,14 +195,14 @@ ln -sf "$config" /etc/samba.conf
 
 # Set permissions for share directory if new (empty), leave untouched if otherwise
 if [ -z "$(ls -A "$share")" ]; then
-    chmod 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
-    chown "$first_user:$first_group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
+    chmod 0770 "$share" || echo "Failed to set permissions for directory $share"
+    chown "$first_user:$first_group" "$share" || echo "Failed to set ownership for directory $share"
 fi
 
 # Set directory permissions
-[ -d /run/samba/msg.lock ] && chmod -R 0755 /run/samba/msg.lock
-[ -d /var/log/samba/cores ] && chmod -R 0700 /var/log/samba/cores
-[ -d /var/cache/samba/msg.lock ] && chmod -R 0755 /var/cache/samba/msg.lock
+[ -d /run/samba/msg.lock ] && chmod -R 0755 /run/samba/msg.lock || :
+[ -d /var/log/samba/cores ] && chmod -R 0700 /var/log/samba/cores || :
+[ -d /var/cache/samba/msg.lock ] && chmod -R 0755 /var/cache/samba/msg.lock || :
 
 # Start the Samba daemon with the following options:
 #  --configfile: Location of the configuration file.
