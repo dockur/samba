@@ -66,6 +66,9 @@ add_user() {
         [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba and password set."
     fi
 
+    [ -z "$first_user" ] && first_user="$username"
+    [ -z "$first_group" ] && first_group="$groupname"
+    
     return 0
 }
 
@@ -78,6 +81,11 @@ users="/etc/samba/users.conf"
 
 # Create shared directory
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
+
+# Create directories if missing
+mkdir -p /var/lib/samba/sysvol
+mkdir -p /var/lib/samba/private
+mkdir -p /var/lib/samba/bind-dns
 
 # Check if the secret file exists and if its size is greater than zero
 if [ -s "$secret" ]; then
@@ -93,7 +101,7 @@ if [ -d "$config" ]; then
 fi
 
 # Check if an external config file was supplied
-if [ -f "$config" ] && [ -s "$config" ]; then
+if [ -s "$config" ]; then
 
     # Inform the user we are using a custom configuration file.
     echo "Using provided configuration file: $config."
@@ -117,10 +125,6 @@ else
       sed -i "s/\[Data\]/\[$NAME\]/" "$config"    
     fi
 
-    # Update force user and force group in smb.conf
-    sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$config"
-    sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "$config"
-
     # Verify if the RW variable is equal to false (indicating read-only mode) 
     if [[ "$RW" == [Ff0]* ]]; then
         # Adjust settings in smb.conf to set share to read-only
@@ -138,13 +142,11 @@ if [ -d "$users" ]; then
 
 fi
 
-# Create directories if missing
-mkdir -p /var/lib/samba/sysvol
-mkdir -p /var/lib/samba/private
-mkdir -p /var/lib/samba/bind-dns
+first_user=""
+first_group=""
 
 # Check if multi-user mode is enabled
-if [ -f "$users" ] && [ -s "$users" ]; then
+if [ -s "$users" ]; then
 
     while IFS= read -r line || [[ -n ${line} ]]; do
 
@@ -172,18 +174,25 @@ else
 
     add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" "$share" || { echo "Failed to add user $USER"; exit 1; }
 
-    if [[ "$RW" != [Ff0]* ]]; then
-        # Set permissions for share directory if new (empty), leave untouched if otherwise
-        if [ -z "$(ls -A "$share")" ]; then
-            chmod 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
-            chown "$USER:$group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
-        fi
-    fi
+fi
+
+# Check if no external config file was supplied
+if [[ "$config" == "/etc/samba/smb.tmp" ]]; then
+
+    # Update force user and force group in smb.conf
+    sed -i "s/^\(\s*\)force user =.*/\1force user = $first_user/" "$config"
+    sed -i "s/^\(\s*\)force group =.*/\1force group = $first_group/" "$config"
 
 fi
 
 # Store configuration location for Healthcheck
 ln -sf "$config" /etc/samba.conf
+
+# Set permissions for share directory if new (empty), leave untouched if otherwise
+if [ -z "$(ls -A "$share")" ]; then
+    chmod 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
+    chown "$first_user:$first_group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
+fi
 
 # Set directory permissions
 [ -d /run/samba/msg.lock ] && chmod -R 0755 /run/samba/msg.lock
