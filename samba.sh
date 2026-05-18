@@ -180,8 +180,8 @@ fi
 
 if [[ "$FORCE" == [Yy1]* ]]; then
 
-  # Check if no external config file was supplied
-  if [[ "$config" == "/etc/samba/smb.tmp" ]]; then
+  # Skip if a config file was supplied
+  if [[ "$config" != "/etc/samba/smb.conf" ]]; then
 
       # Update force user and force group in smb.conf
       sed -i "s/^\(\s*\)force user =.*/\1force user = $first_user/" "$config"
