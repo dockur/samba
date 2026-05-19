@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+: "${FORCE:="Y"}"    # Enable force user and force group settings
+: "${CLEAR:="Y"}"    # Revert passwords to original value from userlist
+
 # This function checks for the existence of a specified Samba user and group. If the user does not exist, 
 # it creates a new user with the provided username, user ID (UID), group name, group ID (GID), and password. 
 # If the user already exists, it updates the user's UID and group association as necessary, 
@@ -56,7 +59,7 @@ add_user() {
     pdb_output=$(pdbedit -s "$cfg" -L)  #Do not combine the two commands into one, as this could lead to issues with the execution order and proper passing of variables. 
     if echo "$pdb_output" | grep -q "^$username:"; then
         # skip samba password update if password is * or !
-        if [[ "$password" != "*" && "$password" != "!" ]]; then
+        if [[ "$password" != "*" && "$password" != "!" && "$CLEAR" == [Yy1]* ]]; then
             # If the user is a samba user, update its password in case it changed
             echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" > /dev/null || { echo "Failed to update Samba password for $username"; return 1; }
         fi
@@ -176,16 +179,21 @@ else
 
 fi
 
-: "${FORCE:="Y"}"
+# Skip if a config file was supplied
+if [[ "$config" != "/etc/samba/smb.conf" && "$FORCE" == [Yy1]* ]]; then
 
-if [[ "$FORCE" == [Yy1]* ]]; then
+  # Check if multi-user mode
+  if [ ! -s "$users" ]; then
 
-  # Skip if a config file was supplied
-  if [[ "$config" != "/etc/samba/smb.conf" ]]; then
+    # Remove force settings from smb.conf
+    sed -i '/force user /d' "$config"
+    sed -i '/force group /d' "$config"
 
-      # Update force user and force group in smb.conf
-      sed -i "s/^\(\s*\)force user =.*/\1force user = $first_user/" "$config"
-      sed -i "s/^\(\s*\)force group =.*/\1force group = $first_group/" "$config"
+  else
+
+    # Update force user and force group in smb.conf
+    sed -i "s/^\(\s*\)force user =.*/\1force user = $first_user/" "$config"
+    sed -i "s/^\(\s*\)force group =.*/\1force group = $first_group/" "$config"
 
   fi
 fi
