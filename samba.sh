@@ -142,9 +142,7 @@ else
     # Check if multi-user mode is enabled
     if [ ! -s "$users" ] && [[ "$FORCE" == [Yy1]* ]]; then
         # Add force user settings
-        echo "   " >> "$config"
-        echo "   force user = $USER" >> "$config"
-        echo "   force group = $group" >> "$config"
+        { echo "   "; echo "   force user = $USER"; echo "   force group = $group"; } >> "$config"
     fi
 
 fi
