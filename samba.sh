@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-: "${FORCE:="Y"}"    # Enable force user and force group settings
-: "${CLEAR:="Y"}"    # Revert passwords to original value from userlist
+: "${FORCE:="Y"}"    # Add force user and force group settings to config
+: "${CLEAR:="Y"}"    # Overwrite passwords for existing users during startup
 
 # This function checks for the existence of a specified Samba user and group. If the user does not exist, 
 # it creates a new user with the provided username, user ID (UID), group name, group ID (GID), and password. 
@@ -17,6 +17,9 @@ add_user() {
     local gid="$5"
     local password="$6"
     local homedir="$7"
+
+    local groups="$groupname"
+    [[ "$groups" != "smb" ]] && groups+=",smb"
 
     # Check if the smb group exists, if not, create it
     if ! getent group "$groupname" &>/dev/null; then
@@ -40,7 +43,7 @@ add_user() {
         if [ -d "$homedir" ]; then
           extra_args=("${extra_args[@]}" -H)
         fi
-        adduser "${extra_args[@]}" -S -D -h "$homedir" -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
+        adduser "${extra_args[@]}" -S -D -h "$homedir" -s /sbin/nologin -G "$groups" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
         local current_uid
@@ -51,7 +54,7 @@ add_user() {
         fi
 
         # Update user's group
-        usermod -g "$groupname" "$username" > /dev/null || { echo "Failed to update group for user $username"; return 1; }
+        usermod -a -G "$groups" "$username" > /dev/null || { echo "Failed to update group for user $username"; }
     fi
 
     # Check if the user is a samba user
