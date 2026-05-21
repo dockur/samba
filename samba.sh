@@ -43,7 +43,7 @@ add_user() {
         if [ -d "$homedir" ]; then
           extra_args=("${extra_args[@]}" -H)
         fi
-        adduser "${extra_args[@]}" -S -D -h "$homedir" -s /sbin/nologin -G "$groups" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
+        adduser "${extra_args[@]}" -S -D -h "$homedir" -s /sbin/nologin -G "$groupsname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
         local current_uid
@@ -52,10 +52,10 @@ add_user() {
             echo "User $username exists but UID differs, updating UID..."
             usermod -o -u "$uid" "$username" > /dev/null || { echo "Failed to update UID for user $username"; return 1; }
         fi
-
-        # Update user's group
-        usermod -a -G "$groups" "$username" > /dev/null || { echo "Failed to update group for user $username"; }
     fi
+
+    # Update user's group
+    usermod -a -G "$groups" "$username" > /dev/null || { echo "Failed to update group for user $username"; return 1; }
 
     # Check if the user is a samba user
     local pdb_output
