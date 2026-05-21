@@ -43,7 +43,7 @@ add_user() {
         if [ -d "$homedir" ]; then
           extra_args=("${extra_args[@]}" -H)
         fi
-        adduser "${extra_args[@]}" -S -D -h "$homedir" -s /sbin/nologin -G "$groupsname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
+        adduser "${extra_args[@]}" -S -D -h "$homedir" -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
         local current_uid
