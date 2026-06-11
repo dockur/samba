@@ -22,6 +22,7 @@ jobs:
         with:
           locale: "US"
           level: warning
+          fail_level: error
           pattern: |
             *.md
             *.sh
@@ -32,6 +33,7 @@ jobs:
         uses: reviewdog/action-hadolint@v1
         with:
           level: warning
+          fail_level: error
           reporter: github-pr-review
           hadolint_ignore: DL3018
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -55,6 +57,7 @@ jobs:
         if: false
         with:
           level: warning
+          fail_on_error: "true"
           shfmt_flags: "-i 2 -ci -bn"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       -
@@ -62,6 +65,7 @@ jobs:
         uses: reviewdog/action-shellcheck@v1
         with:
           level: warning
+          fail_level: error
           reporter: github-pr-review
           shellcheck_flags: -x
           github_token: ${{ secrets.GITHUB_TOKEN }}
