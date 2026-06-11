@@ -110,9 +110,6 @@ mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
 # Set permissions for share directory if new (empty), leave untouched if otherwise
 if [ -z "$(ls -A "$share")" ]; then
     chmod 0770 "$share" || echo "Failed to set permissions for directory $share"
-    if [ ! -s "$users" ]; then
-      chown "$USER:$group" "$share" || echo "Failed to set ownership for directory $share"
-    fi
 fi
 
 # Check if an external config file was supplied
@@ -184,6 +181,11 @@ else
 
     done < <(tr -d '\r' < "$users")
 
+fi
+
+# Set permissions for share directory if new (empty), leave untouched if otherwise
+if [ -z "$(ls -A "$share")" ] && [ ! -s "$users" ]; then
+    chown "$USER:$group" "$share" || echo "Failed to set ownership for directory $share"
 fi
 
 # Store configuration location for Healthcheck
