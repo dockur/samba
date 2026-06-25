@@ -121,7 +121,7 @@ where:
 - `homedir` Optional field for setting the home directory of the user.
 
 ## Stars 🌟
-[![Stars](https://starchart.cc/dockur/samba.svg?variant=adaptive)](https://starchart.cc/dockur/samba)
+[![Stargazers](https://raw.githubusercontent.com/star-stats/stars/refs/heads/data/charts/dockur-samba.svg)](https://github.com/dockur/samba/stargazers)
 
 [build_url]: https://github.com/dockur/samba/
 [hub_url]: https://hub.docker.com/r/dockurr/samba
