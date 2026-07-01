@@ -61,15 +61,22 @@ add_user() {
     local pdb_output
     pdb_output=$(pdbedit -s "$cfg" -L)  #Do not combine the two commands into one, as this could lead to issues with the execution order and proper passing of variables. 
     if echo "$pdb_output" | grep -q "^$username:"; then
-        # skip samba password update if password is * or !
-        if [[ "$password" != "*" && "$password" != "!" && "$CLEAR" == [Yy1]* ]]; then
+        # skip samba password update if password is empty, * or !
+        if [[ -n "$password" && "$password" != "*" && "$password" != "!" && "$CLEAR" == [Yy1]* ]]; then
             # If the user is a samba user, update its password in case it changed
             echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" > /dev/null || { echo "Failed to update Samba password for $username"; return 1; }
         fi
     else
-        # If the user is not a samba user, create it and set a password
-        echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
-        [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba and password set."
+        if [[ -z "$password" ]]; then
+            # If no password is provided, add the user with a disabled password (guest/no-login)
+            smbpasswd -a -n -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
+            smbpasswd -d -c "$cfg" -s "$username" > /dev/null || { echo "Failed to disable Samba user $username"; return 1; }
+            [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba with no password (guest account)."
+        else
+            # If the user is not a samba user, create it and set a password
+            echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
+            [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba and password set."
+        fi
     fi
     
     return 0
@@ -168,7 +175,7 @@ else
         IFS=':' read -r username uid groupname gid password homedir <<< "$line"
 
         # Check if all required fields are present
-        if [[ -z "$username" || -z "$uid" || -z "$groupname" || -z "$gid" || -z "$password" ]]; then
+        if [[ -z "$username" || -z "$uid" || -z "$groupname" || -z "$gid" ]]; then
             echo "Skipping incomplete line: $line"
             continue
         fi
