@@ -15,7 +15,7 @@ Docker container of [Samba](https://www.samba.org/), an implementation of the Wi
 
 ## Usage  🐳
 
-##### Via Docker Compose:
+##### Docker Compose:
 
 ```yaml
 services:
@@ -33,7 +33,7 @@ services:
     restart: always
 ```
 
-##### Via Docker CLI:
+##### Docker CLI:
 
 ```bash
 docker run -it --rm --name samba -p 445:445 -e "NAME=Data" -e "USER=samba" -e "PASS=secret" -v "${PWD:-.}/samba:/storage" docker.io/dockurr/samba
