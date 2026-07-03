@@ -4,6 +4,28 @@ set -Eeuo pipefail
 : "${FORCE:="Y"}"    # Add force user and force group settings to config
 : "${CLEAR:="Y"}"    # Overwrite passwords for existing users during startup
 
+set_password() {
+    local cfg="$1"
+    local username="$2"
+    local password="$3"
+    local add="${4:-}"
+
+    if [ "$add" = "add" ]; then
+        printf '%s\n%s\n' "$password" "$password" | smbpasswd -a -c "$cfg" -s "$username"
+    else
+        printf '%s\n%s\n' "$password" "$password" | smbpasswd -c "$cfg" -s "$username"
+    fi
+}
+
+user_exists() {
+    local cfg="$1"
+    local username="$2"
+    local pdb_output
+
+    pdb_output=$(pdbedit -s "$cfg" -L)
+    printf '%s\n' "$pdb_output" | cut -d: -f1 | grep -Fxq "$username"
+}
+
 # This function checks for the existence of a specified Samba user and group. If the user does not exist, 
 # it creates a new user with the provided username, user ID (UID), group name, group ID (GID), and password. 
 # If the user already exists, it updates the user's UID and group association as necessary, 
@@ -58,13 +80,11 @@ add_user() {
     usermod -a -G "$groups" "$username" > /dev/null || { echo "Failed to update group for user $username"; return 1; }
 
     # Check if the user is a samba user
-    local pdb_output
-    pdb_output=$(pdbedit -s "$cfg" -L)  #Do not combine the two commands into one, as this could lead to issues with the execution order and proper passing of variables. 
-    if echo "$pdb_output" | grep -q "^$username:"; then
+    if user_exists "$cfg" "$username"; then
         # skip samba password update if password is empty, * or !
         if [[ -n "$password" && "$password" != "*" && "$password" != "!" && "$CLEAR" == [Yy1]* ]]; then
             # If the user is a samba user, update its password in case it changed
-            echo -e "$password\n$password" | smbpasswd -c "$cfg" -s "$username" > /dev/null || { echo "Failed to update Samba password for $username"; return 1; }
+            set_password "$cfg" "$username" "$password" > /dev/null || { echo "Failed to update Samba password for $username"; return 1; }
         fi
     else
         if [[ -z "$password" ]]; then
@@ -74,12 +94,16 @@ add_user() {
             [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba with no password (guest account)."
         else
             # If the user is not a samba user, create it and set a password
-            echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
+            set_password "$cfg" "$username" "$password" add > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
             [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba and password set."
         fi
     fi
     
     return 0
+}
+
+escape() {
+    printf '%s' "$1" | sed 's/[\/&\\]/\\&/g'
 }
 
 # Create directories if missing
@@ -141,7 +165,8 @@ else
 
     # Set custom display name if provided
     if [ -n "$NAME" ] && [[ "${NAME,,}" != "data" ]]; then
-        sed -i "s/\[Data\]/\[$NAME\]/" "$config"    
+        name_escaped="$(escape "$NAME")"
+        sed -i "s/\[Data\]/\[$name_escaped\]/" "$config"
     fi
 
     # Verify if the RW variable is equal to false (indicating read-only mode) 
