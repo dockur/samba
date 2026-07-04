@@ -2,19 +2,27 @@
 
 FROM alpine:edge
 
-RUN set -eu && \
-    apk update && \
-    apk upgrade && \
-    apk --no-cache add \
+RUN <<EOF
+  set -eu
+
+  apk update
+  apk upgrade
+  apk --no-cache add \
     tini \
     bash \
     samba \
     tzdata \
     shadow \
-    libauth-samba && \
-    addgroup -S smb && \
-    rm -f /etc/samba/smb.conf && \
-    rm -rf /tmp/* /var/cache/apk/*
+    libauth-samba
+
+  # Create Samba group
+  addgroup -S smb
+
+  # Remove default Samba config
+  rm -f /etc/samba/smb.conf
+
+  rm -rf /tmp/* /var/cache/apk/*
+EOF
 
 COPY --chmod=755 samba.sh /usr/bin/samba.sh
 COPY --chmod=664 smb.conf /etc/samba/smb.default
