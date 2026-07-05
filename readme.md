@@ -13,6 +13,15 @@
 
 Docker container of [Samba](https://www.samba.org/), an implementation of the Windows SMB networking protocol.
 
+## Features ✨
+
+- Provides an SMB/CIFS file server
+- Configurable share name and credentials
+- Supports multiple users via a list file
+- Allows custom Samba configuration
+- Works with Windows, macOS, and Linux clients
+- Lightweight Alpine-based image
+
 ## Usage  🐳
 
 ##### Docker Compose:
