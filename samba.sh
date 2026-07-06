@@ -15,6 +15,8 @@ set_password() {
     else
         printf '%s\n%s\n' "$password" "$password" | smbpasswd -c "$cfg" -s "$username"
     fi
+
+    return 0
 }
 
 user_exists() {
