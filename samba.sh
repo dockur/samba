@@ -11,9 +11,9 @@ set_password() {
     local add="${4:-}"
 
     if [ "$add" = "add" ]; then
-        printf '%s\n%s\n' "$password" "$password" | smbpasswd -a -c "$cfg" -s "$username"
+        printf '%s\n%s\n' "$password" "$password" | smbpasswd -a -c "$cfg" -s "$username" || return 1
     else
-        printf '%s\n%s\n' "$password" "$password" | smbpasswd -c "$cfg" -s "$username"
+        printf '%s\n%s\n' "$password" "$password" | smbpasswd -c "$cfg" -s "$username" || return 1
     fi
 
     return 0
