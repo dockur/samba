@@ -198,6 +198,11 @@ else
         # Skip lines that are comments or empty
         [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
 
+        if [ "$(awk -F: '{print NF}' <<< "$line")" -gt 6 ]; then
+            echo "Skipping line with unsupported ':' in password/home field: $line"
+            continue
+        fi
+
         # Split each line by colon and assign to variables
         IFS=':' read -r username uid groupname gid password homedir <<< "$line"
 
