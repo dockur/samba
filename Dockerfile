@@ -34,9 +34,9 @@ ENV NAME="Data"
 ENV USER="samba"
 ENV PASS="secret"
 
-ENV UID=1000
-ENV GID=1000
-ENV RW=true
+ENV RW="true"
+ENV UID="auto"
+ENV GID="auto"
 
 HEALTHCHECK --interval=60s --timeout=15s \
     CMD ["smbclient", "--configfile=/etc/samba.conf", "-L", "\\\\localhost", "-U", "%", "-m", "SMB3"]
