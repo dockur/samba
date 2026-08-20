@@ -1,5 +1,4 @@
-<h1 align="center"><br />
-<div align="center">
+<h1 align="center"><div align="center">
 <a href="https://github.com/dockur/samba"><img src="https://raw.githubusercontent.com/dockur/samba/master/.github/logo.png" title="Logo" style="max-width:100%;" width="256" /></a>
 </div>
 <div align="center">
