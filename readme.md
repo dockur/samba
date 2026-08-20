@@ -106,7 +106,9 @@ The default username is `samba` and the default password is `secret`.
 
 ### How do I configure file ownership?
 
-You can use the `UID` and `GID` environment variables to configure the user and group IDs used by Samba:
+By default, the container automatically uses the user and group IDs of the shared `/storage` directory. If either ID is `0`, it falls back to `1000` for that value.
+
+You can override the detected values with the `UID` and `GID` environment variables:
 
 ```yaml
 environment:
@@ -114,7 +116,7 @@ environment:
   GID: "1005"
 ```
 
-This is especially useful with bind mounts, where the IDs should normally match the ownership of the files on the host.
+This is useful when the ownership of the mounted directory does not match the IDs you want Samba to use.
 
 ### How do I make the share read-only?
 
