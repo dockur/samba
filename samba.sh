@@ -108,6 +108,32 @@ escape() {
     printf '%s' "$1" | sed 's/[\/&\\]/\\&/g'
 }
 
+resolve_id() {
+    local value="$1"
+    local format="$2"
+    local fallback="$3"
+    local detected
+
+    if [[ "${value,,}" != "auto" ]]; then
+        if [[ ! "$value" =~ ^[0-9]+$ ]]; then
+            echo "Invalid ID value: $value" >&2
+            return 1
+        fi
+
+        printf '%s\n' "$value"
+        return 0
+    fi
+
+    detected=$(stat -c "$format" "$share" 2>/dev/null || :)
+
+    if [[ ! "$detected" =~ ^[0-9]+$ || "$detected" == "0" ]]; then
+        detected="$fallback"
+    fi
+
+    printf '%s\n' "$detected"
+    return 0
+}
+
 # Create directories if missing
 mkdir -p /var/lib/samba/sysvol || :
 mkdir -p /var/lib/samba/private || :
@@ -139,6 +165,10 @@ fi
 
 # Create shared directory
 mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
+
+# Resolve the Samba user and group IDs from the share when set to auto
+user_uid=$(resolve_id "${UID:-auto}" '%u' 1000) || exit 1
+user_gid=$(resolve_id "${GID:-auto}" '%g' 1000) || exit 1
 
 # Set permissions for share directory if new (empty), leave untouched if otherwise
 if [ -z "$(ls -A "$share")" ]; then
@@ -189,7 +219,7 @@ fi
 # Check if multi-user mode is enabled
 if [ ! -s "$users" ]; then
 
-    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" "$share" || { echo "Failed to add user $USER"; exit 1; }
+    add_user "$config" "$USER" "$user_uid" "$group" "$user_gid" "$PASS" "$share" || { echo "Failed to add user $USER"; exit 1; }
 
 else
 
