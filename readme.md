@@ -1,3 +1,4 @@
+<h1 align="center"><br />
 <div align="center">
 <a href="https://github.com/dockur/samba"><img src="https://raw.githubusercontent.com/dockur/samba/master/.github/logo.png" title="Logo" style="max-width:100%;" width="256" /></a>
 </div>
@@ -11,13 +12,14 @@
 
 </div></h1>
 
-Docker container of [Samba](https://www.samba.org/), an implementation of the Windows SMB networking protocol.
+Docker container of [Samba](https://www.samba.org/), an implementation of the SMB networking protocol.
 
 ## Features ✨
 
-- Provides an SMB/CIFS file server
+- Provides a lightweight SMB file server
 - Configurable share name and credentials
 - Supports multiple users via a list file
+- Supports read-only and read-write shares
 - Allows custom Samba configuration
 - Works with Windows, macOS, and Linux clients
 - Lightweight Alpine-based image
@@ -50,9 +52,9 @@ docker run -it --rm --name samba -p 445:445 -e "NAME=Data" -e "USER=samba" -e "P
 
 ## Configuration ⚙️
 
-### How do I choose the location of the shared folder?
+### How do I choose which folder to share?
 
-To change the location of the shared folder, include the following bind mount in your compose file:
+To choose your shared folder, include the following bind mount in your compose file:
 
 ```yaml
 volumes:
@@ -61,9 +63,9 @@ volumes:
 
 Replace the example path `./samba` with the desired folder or named volume.
 
-### How do I modify the display name of the shared folder?
+### How do I change the share name?
 
-You can change the display name of the shared folder by adding the following environment variable:
+You can change the name displayed to SMB clients with the `NAME` environment variable:
 
 ```yaml
 environment:
@@ -72,14 +74,27 @@ environment:
 
 ### How do I connect to the shared folder?
 
-To connect to the shared folder enter: `\\192.168.0.2\Data` in Windows Explorer.
+On Windows, enter the following in File Explorer:
+
+```text
+\\192.168.0.2\Data
+```
+
+On macOS or Linux, use:
+
+```text
+smb://192.168.0.2/Data
+```
+
+Replace `192.168.0.2` with the IP address of the host and `Data` with the configured share name.
 
 > [!NOTE]
-> Replace the example IP address above with that of your host.
+>
+> This container only provides the SMB file server and does not run a WS-Discovery service. As a result, the server will normally not appear automatically under **Network** in Windows.
 
-### How do I modify the default credentials?
+### How do I change the credentials?
 
-You can set the `USER` and `PASS` environment variables to modify the credentials from their default values: user `samba` with password `secret`.
+You can use the `USER` and `PASS` environment variables to configure the username and password:
 
 ```yaml
 environment:
@@ -87,9 +102,11 @@ environment:
   PASS: "secret"
 ```
 
-### How do I modify the permissions?
+The default username is `samba` and the default password is `secret`.
 
-You can set `UID` and `GID` environment variables to change the user and group ID.
+### How do I configure file ownership?
+
+You can use the `UID` and `GID` environment variables to configure the user and group IDs used by Samba:
 
 ```yaml
 environment:
@@ -97,11 +114,24 @@ environment:
   GID: "1005"
 ```
 
-To mark the share as read-only, add the variable `RW: "false"`.
+This is especially useful with bind mounts, where the IDs should normally match the ownership of the files on the host.
 
-### How do I modify other settings?
+### How do I make the share read-only?
 
-If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) file in this repo, and binding your custom config to the container like this:
+Set `RW` to `false`:
+
+```yaml
+environment:
+  RW: "false"
+```
+
+This changes the Samba share to read-only.
+
+### How do I provide a custom Samba configuration?
+
+For advanced configuration, you can provide your own `smb.conf`. The default [smb.conf](https://github.com/dockur/samba/blob/master/smb.conf) can be used as a starting point.
+
+Bind your custom configuration to the container like this:
 
 ```yaml
 volumes:
@@ -110,24 +140,36 @@ volumes:
 
 ### How do I configure multiple users?
 
-If you want to configure multiple users, you can bind the [users.conf](https://github.com/dockur/samba/blob/master/users.conf) file to the container as follows:
+To configure multiple users, bind a [users.conf](https://github.com/dockur/samba/blob/master/users.conf) file to the container:
 
 ```yaml
 volumes:
   - ./users.conf:/etc/samba/users.conf
 ```
 
-Each line inside that file contains a `:` separated list of attributes describing the user to be created.
+Each non-empty line defines one user using the following format:
 
-`username:UID:groupname:GID:password:homedir`
+```text
+username:UID:groupname:GID:password:homedir
+```
 
-where:
-- `username` The textual name of the user.
-- `UID` The numerical id of the user.
-- `groupname` The textual name of the primary user group.
-- `GID` The numerical id of the primary user group.
-- `password` The clear text password of the user. The password can not contain `:`,`\n` or `\r`.
-- `homedir` Optional field for setting the home directory of the user.
+For example:
+
+```text
+john:1001:users:1001:secret:/storage
+jane:1002:users:1001:anothersecret:/storage
+```
+
+The fields are:
+
+- `username` — Username of the account.
+- `UID` — Numeric user ID.
+- `groupname` — Name of the primary group.
+- `GID` — Numeric group ID.
+- `password` — Password of the Samba account. It cannot contain `:`, `\n`, or `\r`.
+- `homedir` — Optional home directory. Defaults to `/storage` when omitted.
+
+Lines starting with `#` and empty lines are ignored.
 
 ## Stars 🌟
 [![Stargazers](https://raw.githubusercontent.com/star-stats/stars/refs/heads/data/charts/dockur-samba.svg)](https://github.com/dockur/samba/stargazers)
