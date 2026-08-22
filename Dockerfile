@@ -27,10 +27,10 @@ EOF
 COPY --chmod=755 samba.sh /usr/bin/samba.sh
 COPY --chmod=664 smb.conf /etc/samba/smb.default
 
-VOLUME /storage
+VOLUME /shared
 EXPOSE 139 445
 
-ENV NAME="Data"
+ENV NAME="Shared"
 ENV USER="samba"
 ENV PASS="secret"
 
