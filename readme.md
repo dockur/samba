@@ -85,7 +85,7 @@ On macOS or Linux, use:
 smb://192.168.0.2/Shared
 ```
 
-Replace `192.168.0.2` with the IP address of the host and `Data` with the configured share name.
+Replace `192.168.0.2` with the IP address of the host and `Shared` with the configured share name.
 
 > [!NOTE]
 >
