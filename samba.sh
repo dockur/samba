@@ -200,7 +200,7 @@ else
     sed -i "s|path = /shared|path = $share|" "$config"
 
     # Set custom display name if provided
-    if [ -n "$NAME" ] && [[ "${NAME,,}" != "data" ]]; then
+    if [ -n "$NAME" ] && [[ "${NAME,,}" != "shared" ]]; then
         name_escaped="$(escape "$NAME")"
         sed -i "s/\[Shared\]/\[$name_escaped\]/" "$config"
     fi
