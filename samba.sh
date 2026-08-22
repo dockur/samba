@@ -141,10 +141,13 @@ mkdir -p /var/lib/samba/bind-dns || :
 
 # Set variables for group and share directory
 group="smb"
-share="/storage"
+share="/shared"
 secret="/run/secrets/pass"
 config="/etc/samba/smb.conf"
 users="/etc/samba/users.conf"
+
+# Support legacy /storage mounts
+[ -d /storage ] && share="/storage"
 
 # Check if the secret file exists and if its size is greater than zero
 if [ -s "$secret" ]; then
@@ -194,6 +197,7 @@ else
     # Generate a config file from template
     rm -f "$config"
     cp "$template" "$config"
+    sed -i "s|^\(\s*path =\).*|\1 $share|" "$config"
 
     # Set custom display name if provided
     if [ -n "$NAME" ] && [[ "${NAME,,}" != "data" ]]; then
