@@ -197,12 +197,12 @@ else
     # Generate a config file from template
     rm -f "$config"
     cp "$template" "$config"
-    sed -i "s|^\(\s*path =\).*|\1 $share|" "$config"
+    sed -i "s|path = /shared|path = $share|" "$config"
 
     # Set custom display name if provided
     if [ -n "$NAME" ] && [[ "${NAME,,}" != "data" ]]; then
         name_escaped="$(escape "$NAME")"
-        sed -i "s/\[Data\]/\[$name_escaped\]/" "$config"
+        sed -i "s/\[Shared\]/\[$name_escaped\]/" "$config"
     fi
 
     # Verify if the RW variable is equal to false (indicating read-only mode) 
