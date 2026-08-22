@@ -105,7 +105,7 @@ The default username is `samba` and the default password is `secret`.
 
 ### How do I configure file ownership?
 
-By default, the container automatically uses the user and group IDs of the shared `/storage` directory. If either ID is `0`, it falls back to `1000` for that value.
+By default, the container automatically uses the user and group IDs of the `/shared` directory. If either ID is `0`, it falls back to `1000` for that value.
 
 You can override the detected values with the `UID` and `GID` environment variables:
 
