@@ -33,20 +33,20 @@ services:
     image: dockurr/samba
     container_name: samba
     environment:
-      NAME: "Data"
+      NAME: "Shared"
       USER: "samba"
       PASS: "secret"
     ports:
       - 445:445
     volumes:
-      - ./samba:/storage
+      - ./data:/shared
     restart: always
 ```
 
 ##### Docker CLI:
 
 ```bash
-docker run -it --rm --name samba -p 445:445 -e "NAME=Data" -e "USER=samba" -e "PASS=secret" -v "${PWD:-.}/samba:/storage" docker.io/dockurr/samba
+docker run -it --rm --name samba -p 445:445 -e "NAME=Shared" -e "USER=samba" -e "PASS=secret" -v "${PWD:-.}/data:/shared" docker.io/dockurr/samba
 ```
 
 ## Configuration ⚙️
@@ -57,10 +57,10 @@ To choose your shared folder, include the following bind mount in your compose f
 
 ```yaml
 volumes:
-  - ./samba:/storage
+  - ./data:/shared
 ```
 
-Replace the example path `./samba` with the desired folder or named volume.
+Replace the example path `./data` with the desired folder or named volume.
 
 ### How do I change the share name?
 
@@ -68,7 +68,7 @@ You can change the name displayed to SMB clients with the `NAME` environment var
 
 ```yaml
 environment:
-  NAME: "Data"
+  NAME: "Shared"
 ```
 
 ### How do I connect to the shared folder?
@@ -76,13 +76,13 @@ environment:
 On Windows, enter the following in File Explorer:
 
 ```text
-\\192.168.0.2\Data
+\\192.168.0.2\Shared
 ```
 
 On macOS or Linux, use:
 
 ```text
-smb://192.168.0.2/Data
+smb://192.168.0.2/Shared
 ```
 
 Replace `192.168.0.2` with the IP address of the host and `Data` with the configured share name.
@@ -157,8 +157,8 @@ username:UID:groupname:GID:password:homedir
 For example:
 
 ```text
-john:1001:users:1001:secret:/storage
-jane:1002:users:1001:anothersecret:/storage
+john:1001:users:1001:secret:/shared
+jane:1002:users:1001:anothersecret:/shared
 ```
 
 The fields are:
@@ -168,7 +168,7 @@ The fields are:
 - `groupname` — Name of the primary group.
 - `GID` — Numeric group ID.
 - `password` — Password of the Samba account. It cannot contain `:`, `\n`, or `\r`.
-- `homedir` — Optional home directory. Defaults to `/storage` when omitted.
+- `homedir` — Optional home directory. Defaults to `/shared` when omitted.
 
 Lines starting with `#` and empty lines are ignored.
 
