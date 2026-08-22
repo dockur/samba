@@ -3,14 +3,11 @@ services:
     image: dockurr/samba
     container_name: samba
     environment:
-      NAME: "Data"
+      NAME: "Shared"
       USER: "samba"
       PASS: "secret"
-      RW: true      # Optional, default true
-      UID: 1000    # Optional, default 1000
-      GID: 1000    # Optional, default 1000
     ports:
       - 445:445
     volumes:
-      - ./samba:/storage
+      - ./data:/shared
     restart: always
